@@ -30,7 +30,7 @@ export default function MobileBottomNav() {
     },
     {
       label: 'Explore',
-      href: '/#genres',
+      href: '/genres',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="12" cy="12" r="10" />
@@ -55,7 +55,13 @@ export default function MobileBottomNav() {
       {navItems.map((item) => {
         const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
         return (
-          <Link key={item.label} href={item.href} className={`nav-item ${isActive ? 'active' : ''}`}>
+          <Link
+            key={item.label}
+            href={item.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`nav-item ${isActive ? 'active' : ''}`}
+          >
             <span className="nav-icon">{item.icon}</span>
             <span className="nav-label">{item.label}</span>
           </Link>

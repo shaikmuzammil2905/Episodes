@@ -6,6 +6,8 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import StoryModal from '@/components/StoryModal';
+import GenreModal from '@/components/GenreModal';
+import StepModal from '@/components/StepModal';
 import WhatsAppPopup from '@/components/WhatsAppPopup';
 import WhatsAppFAB from '@/components/WhatsAppFAB';
 
@@ -17,6 +19,8 @@ export default function ClientProviders({ children }: { children: React.ReactNod
       <Footer />
       <MobileBottomNav />
       <StoryModal />
+      <GenreModal />
+      <StepModal />
       <WhatsAppPopup />
       <WhatsAppFAB />
     </ModalProvider>

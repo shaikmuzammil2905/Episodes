@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Episode } from '@/lib/types';
 import { useModal } from '@/context/ModalContext';
 import { getRelatedStories } from '@/lib/data';
 
@@ -114,7 +115,7 @@ export default function StoryModal() {
                 </div>
 
                 <div className="episodes-grid">
-                  {activeStory.episodes.map((ep) => (
+                  {activeStory.episodes.map((ep: Episode) => (
                     <Link
                       key={ep.id}
                       href={`/reader/${activeStory.id}/${ep.id}`}
@@ -140,7 +141,7 @@ export default function StoryModal() {
               <div className="tags-card">
                 <h4>Story Tags</h4>
                 <div className="tags-cloud">
-                  {activeStory.tags.map((tag) => (
+                  {activeStory.tags.map((tag: string) => (
                     <span key={tag} className="tag-chip">#{tag}</span>
                   ))}
                 </div>
