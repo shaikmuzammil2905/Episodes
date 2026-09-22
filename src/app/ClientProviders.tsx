@@ -10,10 +10,12 @@ import GenreModal from '@/components/GenreModal';
 import StepModal from '@/components/StepModal';
 import WhatsAppPopup from '@/components/WhatsAppPopup';
 import WhatsAppFAB from '@/components/WhatsAppFAB';
+import SplashScreen from '@/components/SplashScreen';
 
 export default function ClientProviders({ children }: { children: React.ReactNode }) {
   return (
     <ModalProvider>
+      <SplashScreen />
       <Header />
       <main style={{ flex: 1, paddingBottom: 60 }}>{children}</main>
       <Footer />

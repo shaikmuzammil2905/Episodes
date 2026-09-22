@@ -7,6 +7,7 @@ import HeroSection from '@/components/HeroSection';
 import StoryCard from '@/components/StoryCard';
 import { STORIES, GENRES } from '@/lib/data';
 import { useModal, HowItWorksStep } from '@/context/ModalContext';
+import ScrollObserver from '@/components/ScrollObserver';
 
 export default function HomePage() {
   const { openGenreModal, openStepModal } = useModal();
@@ -139,12 +140,17 @@ export default function HomePage() {
       </section>
 
       {/* ──── FEATURED STORIES ──── */}
-      <section className="section featured-section">
+      <section className="section-padding bg-main">
         <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">Featured Stories</h2>
-            <p className="section-sub">Hand-picked stories you&apos;ll love</p>
-          </div>
+          <ScrollObserver animationClass="fade-up">
+            <div className="section-header">
+              <div>
+                <span className="section-subtitle">Must Read</span>
+                <h2 className="section-title">Featured Epics</h2>
+              </div>
+              <Link href="/stories" className="view-all-link">View All →</Link>
+            </div>
+          </ScrollObserver>
           <div className="stories-grid">
             {featuredStories.map((story) => (
               <StoryCard key={story.id} story={story} />
@@ -153,13 +159,17 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ──── LATEST STORIES ──── */}
-      <section className="section latest-section">
+      {/* ──── LATEST RELEASES ──── */}
+      <section className="section-padding bg-main">
         <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">Latest Stories</h2>
-            <p className="section-sub">Fresh stories just added to the platform</p>
-          </div>
+          <ScrollObserver animationClass="fade-up">
+            <div className="section-header">
+              <div>
+                <span className="section-subtitle">Just Updated</span>
+                <h2 className="section-title">Latest Releases</h2>
+              </div>
+            </div>
+          </ScrollObserver>
           <div className="stories-grid">
             {latestStories.map((story) => (
               <StoryCard key={story.id} story={story} />

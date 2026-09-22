@@ -133,7 +133,8 @@ export default function GenreModal() {
           overflow-y: auto;
           position: relative;
           padding: 28px;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+          border: 1px solid var(--border-color);
+          animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .modal-close-btn {

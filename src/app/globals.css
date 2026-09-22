@@ -170,3 +170,34 @@ button {
   border-color: var(--royal-blue);
   color: var(--royal-blue);
 }
+
+/* --- SCROLL ANIMATIONS --- */
+.scroll-observer-wrapper {
+  opacity: 0;
+  transform: translateY(20px);
+  visibility: hidden;
+}
+
+.scroll-observer-wrapper.fade-up {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.scroll-observer-wrapper.fade-in {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 0.6s ease;
+}
+
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
