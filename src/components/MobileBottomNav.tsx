@@ -58,8 +58,6 @@ export default function MobileBottomNav() {
           <Link
             key={item.label}
             href={item.href}
-            target="_blank"
-            rel="noopener noreferrer"
             className={`nav-item ${isActive ? 'active' : ''}`}
           >
             <span className="nav-icon">{item.icon}</span>
@@ -82,7 +80,7 @@ export default function MobileBottomNav() {
           align-items: center;
           justify-content: space-around;
           z-index: 90;
-          box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05);
+          padding-bottom: env(safe-area-inset-bottom);
         }
 
         @media (min-width: 768px) {

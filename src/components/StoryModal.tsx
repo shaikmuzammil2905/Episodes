@@ -193,10 +193,10 @@ export default function StoryModal() {
           position: relative;
           background: var(--bg-surface);
           width: 100%;
-          max-width: 900px;
+          max-width: 1100px;
           max-height: 90vh;
           border-radius: var(--radius-lg);
-          box-shadow: var(--shadow-xl);
+          border: 1px solid var(--border-color);
           display: flex;
           flex-direction: column;
           overflow: hidden;
@@ -251,18 +251,20 @@ export default function StoryModal() {
         .cover-img-box {
           position: relative;
           width: 100%;
-          max-width: 220px;
-          aspect-ratio: 3 / 4;
+          max-width: 100%;
+          aspect-ratio: 16 / 10;
           border-radius: var(--radius-md);
           overflow: hidden;
-          box-shadow: var(--shadow-md);
           flex-shrink: 0;
           margin: 0 auto;
         }
 
         @media (min-width: 640px) {
           .cover-img-box {
+            max-width: 220px;
+            aspect-ratio: 3 / 4;
             margin: 0;
+            border: 1px solid var(--border-color);
           }
         }
 
@@ -290,10 +292,16 @@ export default function StoryModal() {
         }
 
         .modal-title {
-          font-size: 1.6rem;
+          font-size: 1.75rem;
           font-weight: 800;
           color: var(--text-primary);
-          line-height: 1.25;
+          line-height: 1.15;
+        }
+
+        @media (min-width: 640px) {
+          .modal-title {
+            font-size: 2rem;
+          }
         }
 
         .author-row {

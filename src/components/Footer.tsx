@@ -10,46 +10,43 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="footer-brand">
             <Image src="/assets/logo.png" alt="StoryEpisodes" width={140} height={40} style={{ objectFit: 'contain' }} />
-            <p className="brand-tagline">Read • Explore • Keep Coming Back</p>
             <p className="brand-description">
-              Discover captivating stories told one episode at a time. Follow your favourite worlds and come back for the next chapter.
+              Discover captivating stories, explore new worlds, and keep coming back for the next episode.
             </p>
           </div>
 
-          {/* Quick Links */}
+          {/* Explore */}
           <div className="footer-col">
-            <h4>Quick Links</h4>
-            <Link href="/">Home</Link>
+            <h4>Explore</h4>
             <Link href="/stories">Stories</Link>
-            <Link href="/#genres">Genres</Link>
+            <Link href="/genres">Genres</Link>
             <Link href="/authors">Authors</Link>
-            <Link href="/#about">About</Link>
+            <Link href="/stories?latest=true">Latest Stories</Link>
           </div>
 
-          {/* Categories */}
+          {/* Platform */}
           <div className="footer-col">
-            <h4>Categories</h4>
-            <Link href="/stories?genre=english">English Stories</Link>
-            <Link href="/stories?genre=telugu">Telugu Stories</Link>
-            <Link href="/stories?genre=short-stories">Short Stories</Link>
-            <Link href="/stories?genre=fantasy">Fantasy</Link>
-            <Link href="/stories?genre=mystery">Mystery</Link>
+            <h4>Platform</h4>
+            <Link href="/about">About StoryEpisodes</Link>
+            <Link href="/about#how-it-works">How It Works</Link>
+            <Link href="/about#contact">Contact</Link>
+            <span className="text-muted">Future Premium</span>
           </div>
 
-          {/* Contact */}
+          {/* Connect */}
           <div className="footer-col">
-            <h4>Get in Touch</h4>
-            <a href="tel:+918790349941" className="contact-link">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
-              </svg>
-              8790349941
-            </a>
-            <a href="https://wa.me/918790349941" target="_blank" rel="noopener noreferrer" className="contact-link">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <h4>Connect</h4>
+            <a href="https://wa.me/918790349941?text=Hello%20StoryEpisodes%2C%20I%20would%20like%20to%20know%20more%20about%20the%20platform." target="_blank" rel="noopener noreferrer" className="contact-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.299.434 2.503 1.185 3.477l-.775 2.83 2.9-.761c.939.633 2.062.984 3.256.984 3.18 0 5.767-2.587 5.767-5.766 0-3.18-2.587-5.766-5.765-5.766z" />
               </svg>
               WhatsApp
+            </a>
+            <a href="tel:+918790349941" className="contact-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
+              </svg>
+              Call Us
             </a>
           </div>
         </div>
@@ -62,15 +59,16 @@ export default function Footer() {
       <style jsx>{`
         .footer {
           background: var(--primary);
-          color: #CBD5E1;
-          padding: 60px 0 24px;
+          color: var(--bg-cream);
+          padding: 48px 0 24px;
           margin-top: auto;
+          border-top: 1px solid var(--border-color);
         }
 
         .footer-grid {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 36px;
+          gap: 32px;
         }
 
         @media (min-width: 640px) {
@@ -88,59 +86,59 @@ export default function Footer() {
         .footer-brand {
           display: flex;
           flex-direction: column;
-          gap: 12px;
-        }
-
-        .brand-tagline {
-          font-size: 0.85rem;
-          color: var(--accent-gold);
-          font-weight: 600;
-          letter-spacing: 0.06em;
+          gap: 16px;
         }
 
         .brand-description {
-          font-size: 0.88rem;
+          font-size: 0.95rem;
           line-height: 1.6;
           color: #94A3B8;
-          max-width: 300px;
+          max-width: 320px;
         }
 
         .footer-col {
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: 12px;
         }
 
         .footer-col h4 {
-          font-size: 0.95rem;
+          font-size: 1.05rem;
           font-weight: 700;
           color: #fff;
-          margin-bottom: 4px;
+          margin-bottom: 8px;
         }
 
-        .footer-col a {
-          font-size: 0.88rem;
+        .footer-col a, .text-muted {
+          font-size: 0.95rem;
           color: #94A3B8;
           transition: var(--transition-fast);
+          display: inline-block;
         }
 
         .footer-col a:hover {
           color: var(--accent-gold);
-          padding-left: 4px;
+          transform: translateX(4px);
         }
 
         .contact-link {
           display: inline-flex;
           align-items: center;
-          gap: 8px;
+          gap: 10px;
+          color: var(--accent-gold-light);
+          font-weight: 600;
+        }
+        
+        .contact-link:hover {
+          color: var(--accent-gold);
         }
 
         .footer-bottom {
-          margin-top: 40px;
-          padding-top: 20px;
+          margin-top: 48px;
+          padding-top: 24px;
           border-top: 1px solid rgba(255, 255, 255, 0.1);
           text-align: center;
-          font-size: 0.82rem;
+          font-size: 0.85rem;
           color: #64748B;
         }
       `}</style>

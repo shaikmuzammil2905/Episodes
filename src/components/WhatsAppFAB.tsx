@@ -22,25 +22,25 @@ export default function WhatsAppFAB() {
       <style jsx>{`
         .wa-fab {
           position: fixed;
-          bottom: 80px;
+          bottom: calc(20px + env(safe-area-inset-bottom) + 60px);
           right: 20px;
           width: 56px;
           height: 56px;
-          background: #25D366;
+          background-color: #25D366;
+          color: white;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
-          z-index: 80;
-          transition: var(--transition-fast);
-          animation: fabPulse 3s infinite;
+          border: 1px solid rgba(0, 0, 0, 0.1);
+          cursor: pointer;
+          z-index: 50;
+          transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .wa-fab:hover {
           background: #1EBE57;
           transform: scale(1.1);
-          box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
         }
 
         @media (min-width: 768px) {
@@ -49,7 +49,6 @@ export default function WhatsAppFAB() {
             right: 32px;
           }
         }
-
         @keyframes fabPulse {
           0%, 100% { box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4); }
           50% { box-shadow: 0 4px 24px rgba(37, 211, 102, 0.6); }

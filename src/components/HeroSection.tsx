@@ -109,6 +109,7 @@ export default function HeroSection() {
           background-size: cover;
           background-position: center;
           background-repeat: no-repeat;
+          filter: brightness(1.05);
         }
 
         .hero-desktop {
@@ -210,7 +211,6 @@ export default function HeroSection() {
         .search-box:focus-within {
           background: rgba(255, 255, 255, 0.2);
           border-color: var(--accent-gold);
-          box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
         }
 
         .search-icon {
@@ -240,7 +240,7 @@ export default function HeroSection() {
           right: 0;
           background: #fff;
           border-radius: var(--radius-md);
-          box-shadow: var(--shadow-xl);
+          border: 1px solid var(--border-color);
           z-index: 30;
           margin-top: 8px;
           overflow: hidden;

@@ -64,13 +64,12 @@ export default function StoryCard({ story }: StoryCardProps) {
           display: flex;
           flex-direction: column;
           cursor: pointer;
-          transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+          transition: transform var(--transition-fast), border-color var(--transition-fast);
         }
 
         .story-card:hover {
           transform: translateY(-4px);
-          box-shadow: var(--shadow-lg);
-          border-color: #CBD5E1;
+          border-color: var(--royal-blue);
         }
 
         .cover-wrapper {
