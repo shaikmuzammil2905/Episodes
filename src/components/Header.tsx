@@ -42,11 +42,11 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="desktop-nav desktop-only">
-            <Link href="/" target="_blank" rel="noopener noreferrer" className="nav-link">Home</Link>
-            <Link href="/stories" target="_blank" rel="noopener noreferrer" className="nav-link">Stories</Link>
-            <Link href="/genres" target="_blank" rel="noopener noreferrer" className="nav-link">Genres</Link>
-            <Link href="/authors" target="_blank" rel="noopener noreferrer" className="nav-link">Authors</Link>
-            <Link href="/about" target="_blank" rel="noopener noreferrer" className="nav-link">About</Link>
+            <Link href="/" className="nav-link">Home</Link>
+            <Link href="/stories" className="nav-link">Stories</Link>
+            <Link href="/genres" className="nav-link">Genres</Link>
+            <Link href="/authors" className="nav-link">Authors</Link>
+            <Link href="/about" className="nav-link">About</Link>
           </nav>
 
           {/* Header Actions */}
@@ -70,11 +70,11 @@ export default function Header() {
           <div className="mobile-menu-overlay">
             <div className="mobile-menu-content">
               <nav className="mobile-nav-links">
-                <Link href="/" target="_blank" rel="noopener noreferrer" onClick={() => setMobileMenuOpen(false)}>Home</Link>
-                <Link href="/stories" target="_blank" rel="noopener noreferrer" onClick={() => setMobileMenuOpen(false)}>Stories</Link>
-                <Link href="/genres" target="_blank" rel="noopener noreferrer" onClick={() => setMobileMenuOpen(false)}>Genres</Link>
-                <Link href="/authors" target="_blank" rel="noopener noreferrer" onClick={() => setMobileMenuOpen(false)}>Authors</Link>
-                <Link href="/about" target="_blank" rel="noopener noreferrer" onClick={() => setMobileMenuOpen(false)}>About</Link>
+                <Link href="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
+                <Link href="/stories" onClick={() => setMobileMenuOpen(false)}>Stories</Link>
+                <Link href="/genres" onClick={() => setMobileMenuOpen(false)}>Genres</Link>
+                <Link href="/authors" onClick={() => setMobileMenuOpen(false)}>Authors</Link>
+                <Link href="/about" onClick={() => setMobileMenuOpen(false)}>About</Link>
               </nav>
               <div className="mobile-menu-actions">
                 <button className="btn-primary w-full" onClick={() => { setMobileMenuOpen(false); openWhatsAppModal(); }}>
