@@ -3,13 +3,15 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   const navItems = [
     {
-      label: 'Home',
+      label: t('home'),
       href: '/',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -19,7 +21,7 @@ export default function MobileBottomNav() {
       ),
     },
     {
-      label: 'Stories',
+      label: t('stories'),
       href: '/stories',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -29,7 +31,7 @@ export default function MobileBottomNav() {
       ),
     },
     {
-      label: 'Explore',
+      label: t('explore'),
       href: '/genres',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -39,7 +41,7 @@ export default function MobileBottomNav() {
       ),
     },
     {
-      label: 'Authors',
+      label: t('authors'),
       href: '/authors',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -52,11 +54,11 @@ export default function MobileBottomNav() {
 
   return (
     <nav className="mobile-bottom-nav">
-      {navItems.map((item) => {
+      {navItems.map((item, index) => {
         const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
         return (
           <Link
-            key={item.label}
+            key={index}
             href={item.href}
             className={`nav-item ${isActive ? 'active' : ''}`}
           >

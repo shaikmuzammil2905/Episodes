@@ -6,11 +6,12 @@ import HeroSection from '@/components/HeroSection';
 import StoryCard from '@/components/StoryCard';
 import { STORIES, GENRES } from '@/lib/data';
 import { useModal } from '@/context/ModalContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function HomePage() {
   const { openGenreModal } = useModal();
+  const { selectedLanguage, setLanguage, t } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState<string>('Novels');
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('All Languages');
 
   // Derive available languages from STORIES
   const availableLanguages = useMemo(() => {
@@ -55,16 +56,21 @@ export default function HomePage() {
       <nav className="compact-story-nav">
         <div className="container">
           <ul className="story-nav-list">
-            {categories.map(cat => (
+            {categories.map(cat => {
+              const translatedCat = cat === 'Novels' ? t('novels') 
+                : cat === 'Long Stories' ? t('longStories')
+                : cat === 'Short Stories' ? t('shortStories')
+                : t('funStories');
+              return (
               <li key={cat}>
                 <button
                   className={`story-nav-btn ${selectedCategory === cat ? 'active' : ''}`}
                   onClick={() => setSelectedCategory(cat)}
                 >
-                  {cat}
+                  {translatedCat}
                 </button>
               </li>
-            ))}
+            )})}
           </ul>
         </div>
       </nav>
@@ -76,16 +82,16 @@ export default function HomePage() {
       <section className="language-filter-section">
         <div className="container">
           <div className="language-filter-wrapper">
-            <label className="language-label" htmlFor="language-select">Language</label>
+            <label className="language-label" htmlFor="language-select">{t('language')}</label>
             <div className="select-wrapper">
               <select 
                 id="language-select" 
                 className="language-select"
                 value={selectedLanguage}
-                onChange={(e) => setSelectedLanguage(e.target.value)}
+                onChange={(e) => setLanguage(e.target.value)}
               >
                 {availableLanguages.map(lang => (
-                  <option key={lang} value={lang}>{lang}</option>
+                  <option key={lang} value={lang}>{lang === 'All Languages' ? t('allLanguages') : lang}</option>
                 ))}
               </select>
             </div>
@@ -97,7 +103,7 @@ export default function HomePage() {
       <section className="section bg-main pt-0">
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">Popular Novels</h2>
+            <h2 className="section-title">{t('popularNovels')}</h2>
           </div>
           {popularStories.length > 0 ? (
             <div className="stories-grid">
@@ -106,7 +112,13 @@ export default function HomePage() {
               ))}
             </div>
           ) : (
-            <div className="empty-state">No popular stories found for this filter.</div>
+            <div className="empty-state">
+              {t('noStories')}
+              <br/><br/>
+              <button className="btn-secondary" onClick={() => setLanguage('All Languages')}>
+                {t('viewAllLanguages')}
+              </button>
+            </div>
           )}
         </div>
       </section>
@@ -115,7 +127,7 @@ export default function HomePage() {
       <section className="section bg-main">
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">Trending Stories</h2>
+            <h2 className="section-title">{t('trendingStories')}</h2>
           </div>
           {trendingStories.length > 0 ? (
             <div className="stories-grid">
@@ -124,7 +136,13 @@ export default function HomePage() {
               ))}
             </div>
           ) : (
-            <div className="empty-state">No trending stories found for this filter.</div>
+             <div className="empty-state">
+              {t('noStories')}
+              <br/><br/>
+              <button className="btn-secondary" onClick={() => setLanguage('All Languages')}>
+                {t('viewAllLanguages')}
+              </button>
+            </div>
           )}
         </div>
       </section>
@@ -133,7 +151,7 @@ export default function HomePage() {
       <section className="section bg-main">
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">Latest Novel Chapters & Stories</h2>
+            <h2 className="section-title">{t('latestStories')}</h2>
           </div>
           {latestStories.length > 0 ? (
             <div className="stories-grid">
@@ -142,7 +160,13 @@ export default function HomePage() {
               ))}
             </div>
           ) : (
-            <div className="empty-state">No latest stories found for this filter.</div>
+             <div className="empty-state">
+              {t('noStories')}
+              <br/><br/>
+              <button className="btn-secondary" onClick={() => setLanguage('All Languages')}>
+                {t('viewAllLanguages')}
+              </button>
+            </div>
           )}
         </div>
       </section>
@@ -151,7 +175,7 @@ export default function HomePage() {
       <section id="genres" className="section genres-section bg-cream">
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">Discover by Genre</h2>
+            <h2 className="section-title">{t('discoverByGenre')}</h2>
           </div>
           <div className="genre-chips-container">
             {GENRES.map((genre) => (
@@ -173,7 +197,7 @@ export default function HomePage() {
                   {genre.iconName === 'Feather' && '🪶'}
                   {genre.iconName === 'Clock' && '⏱️'}
                 </span>
-                {genre.name}
+                {t(genre.name.toLowerCase().replace(' ', '')) || genre.name}
               </button>
             ))}
           </div>

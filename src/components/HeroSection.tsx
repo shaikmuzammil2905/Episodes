@@ -4,11 +4,13 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { searchStories } from '@/lib/data';
 import { useModal } from '@/context/ModalContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function HeroSection() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showResults, setShowResults] = useState(false);
   const { openStoryModal } = useModal();
+  const { t } = useLanguage();
 
   const results = searchQuery.trim() ? searchStories(searchQuery).slice(0, 5) : [];
 
@@ -24,12 +26,12 @@ export default function HeroSection() {
       <div className="container hero-content">
         <div className="hero-text-wrapper">
           <h1 className="hero-headline">
-            Discover Amazing Stories,
+            {t('discoverAmazingStories')}
             <br />
-            <span className="hero-highlight">One Episode at a Time</span>
+            <span className="hero-highlight">{t('oneEpisodeAtATime')}</span>
           </h1>
           <p className="hero-sub">
-            Explore captivating stories, discover new worlds, and keep coming back for the next episode.
+            {t('heroSub')}
           </p>
 
           {/* Search Bar */}
@@ -41,13 +43,13 @@ export default function HeroSection() {
               </svg>
               <input
                 type="text"
-                placeholder="Search stories, authors, genres..."
+                placeholder={t('searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setShowResults(true); }}
                 onFocus={() => setShowResults(true)}
                 onBlur={() => setTimeout(() => setShowResults(false), 200)}
                 className="search-input"
-                aria-label="Search stories"
+                aria-label={t('search')}
               />
             </div>
 
@@ -73,13 +75,13 @@ export default function HeroSection() {
 
           <div className="hero-cta-group">
             <Link href="/stories" className="btn-primary hero-cta">
-              Explore Stories
+              {t('explore')}
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </Link>
             <Link href="/#genres" className="btn-secondary hero-cta">
-              Browse Genres
+              {t('browseGenres')}
             </Link>
           </div>
         </div>

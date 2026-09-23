@@ -6,9 +6,11 @@ import Link from 'next/link';
 import { Episode } from '@/lib/types';
 import { useModal } from '@/context/ModalContext';
 import { getRelatedStories } from '@/lib/data';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function StoryModal() {
   const { activeStory, closeStoryModal } = useModal();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -50,19 +52,19 @@ export default function StoryModal() {
             <div className="story-meta-header">
               <div className="meta-badges">
                 <span className={`badge ${activeStory.isPremium ? 'badge-premium' : 'badge-free'}`}>
-                  {activeStory.isPremium ? 'Premium' : 'Free Story'}
+                  {activeStory.isPremium ? t('premium') : t('free')}
                 </span>
                 <span className="badge badge-genre">{activeStory.genre}</span>
                 <span className="badge-lang">{activeStory.language}</span>
               </div>
               <h2 className="modal-title">{activeStory.title}</h2>
               <div className="author-row">
-                <span className="by-txt">Written by</span>
+                <span className="by-txt">{t('by')}</span>
                 <span className="author-name">{activeStory.author}</span>
               </div>
               <div className="stats-pills">
                 <span className="stat-pill">
-                  📖 {activeStory.episodes.length} Episodes
+                  📖 {activeStory.episodes.length} {t('episodes')}
                 </span>
                 {activeStory.readingTime && (
                   <span className="stat-pill">⏱️ {activeStory.readingTime}</span>
@@ -80,14 +82,14 @@ export default function StoryModal() {
                 className="btn-primary start-reading-btn"
                 onClick={closeStoryModal}
               >
-                <span>Start Reading (Episode 1)</span>
+                <span>{t('readNow')}</span>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               </Link>
             ) : (
               <button className="btn-primary start-reading-btn" disabled>
-                No Episodes Available
+                {t('noStories')}
               </button>
             )}
           </div>
@@ -110,8 +112,8 @@ export default function StoryModal() {
               {/* Episode List Section */}
               <section className="info-block episode-list-block">
                 <div className="episodes-header">
-                  <h3>Episode List</h3>
-                  <span className="count-sub">{activeStory.episodes.length} Chapters Published</span>
+                  <h3>{t('episodes')}</h3>
+                  <span className="count-sub">{activeStory.episodes.length} {t('episodes')}</span>
                 </div>
 
                 <div className="episodes-grid">
@@ -128,7 +130,7 @@ export default function StoryModal() {
                         <div className="ep-summary">{ep.summary}</div>
                       </div>
                       <div className="ep-action">
-                        <span className="read-icon">Read →</span>
+                        <span className="read-icon">→</span>
                       </div>
                     </Link>
                   ))}
@@ -149,7 +151,7 @@ export default function StoryModal() {
 
               {relatedStories.length > 0 && (
                 <div className="related-card">
-                  <h4>You Might Also Like</h4>
+                  <h4>{t('relatedStories')}</h4>
                   <div className="related-mini-list">
                     {relatedStories.map((rel) => (
                       <div
@@ -161,7 +163,7 @@ export default function StoryModal() {
                         }}
                       >
                         <div className="rel-title">{rel.title}</div>
-                        <div className="rel-meta">{rel.genre} • By {rel.author}</div>
+                        <div className="rel-meta">{rel.genre} • {t('by')} {rel.author}</div>
                       </div>
                     ))}
                   </div>
