@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import ClientProviders from "./ClientProviders";
 
 export const metadata: Metadata = {
   title: "StoryEpisodes — Read • Explore • Keep Coming Back",
@@ -26,7 +25,7 @@ export default function RootLayout({
         <link rel="icon" href="/assets/logo.png" />
       </head>
       <body>
-        <ClientProviders>{children}</ClientProviders>
+        {children}
       </body>
     </html>
   );

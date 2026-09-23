@@ -1,11 +1,15 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
-import { GENRES, STORIES } from '@/lib/data';
+import { Genre, Story } from '@/lib/types';
 import { useModal } from '@/context/ModalContext';
 
-export default function GenresPage() {
+interface GenresPageClientProps {
+  genres: Genre[];
+  stories: Story[];
+}
+
+export default function GenresPageClient({ genres, stories }: GenresPageClientProps) {
   const { openGenreModal } = useModal();
 
   return (
@@ -17,8 +21,8 @@ export default function GenresPage() {
         </div>
 
         <div className="genres-standalone-grid">
-          {GENRES.map((genre) => {
-            const count = STORIES.filter(
+          {genres.map((genre) => {
+            const count = stories.filter(
               (s) => s.genreId === genre.slug || s.language.toLowerCase() === genre.slug
             ).length;
 
@@ -41,6 +45,7 @@ export default function GenresPage() {
                     {genre.iconName === 'Globe' && '🌍'}
                     {genre.iconName === 'Feather' && '🪶'}
                     {genre.iconName === 'Clock' && '⏱️'}
+                    {!['Sparkles', 'Heart', 'Compass', 'Zap', 'Cpu', 'Ghost', 'Map', 'BookOpen', 'Globe', 'Feather', 'Clock'].includes(genre.iconName) && '📚'}
                   </span>
                 </div>
                 <div className="genre-info">

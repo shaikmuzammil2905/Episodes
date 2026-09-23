@@ -3,9 +3,18 @@
 import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import StoryCard from '@/components/StoryCard';
+import { Story, Genre } from '@/lib/types';
 import { STORIES, GENRES } from '@/lib/data';
 
-export default function StoriesContent() {
+interface StoriesContentProps {
+  initialStories?: Story[];
+  initialGenres?: Genre[];
+}
+
+export default function StoriesContent({ initialStories, initialGenres }: StoriesContentProps) {
+  const allStories: Story[] = (initialStories && initialStories.length > 0) ? initialStories : STORIES;
+  const genresList: Genre[] = (initialGenres && initialGenres.length > 0) ? initialGenres : GENRES;
+
   const searchParams = useSearchParams();
   const genreParam = searchParams.get('genre') || '';
   const [searchQuery, setSearchQuery] = useState('');
@@ -13,31 +22,31 @@ export default function StoriesContent() {
   const [statusFilter, setStatusFilter] = useState('');
 
   const filteredStories = useMemo(() => {
-    let result = STORIES;
+    let result = allStories;
     if (activeGenre) {
       result = result.filter(
-        (s) =>
+        (s: Story) =>
           s.genreId === activeGenre ||
           s.language.toLowerCase().replace(/\s+/g, '-') === activeGenre ||
           s.language.toLowerCase() === activeGenre
       );
     }
     if (statusFilter) {
-      if (statusFilter === 'free') result = result.filter((s) => !s.isPremium);
-      if (statusFilter === 'premium') result = result.filter((s) => s.isPremium);
+      if (statusFilter === 'free') result = result.filter((s: Story) => !s.isPremium);
+      if (statusFilter === 'premium') result = result.filter((s: Story) => s.isPremium);
     }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(
-        (s) =>
+        (s: Story) =>
           s.title.toLowerCase().includes(q) ||
           s.author.toLowerCase().includes(q) ||
           s.genre.toLowerCase().includes(q) ||
-          s.tags.some((t) => t.toLowerCase().includes(q))
+          (s.tags || []).some((t: string) => t.toLowerCase().includes(q))
       );
     }
     return result;
-  }, [activeGenre, statusFilter, searchQuery]);
+  }, [allStories, activeGenre, statusFilter, searchQuery]);
 
   return (
     <div className="stories-page">
@@ -72,7 +81,7 @@ export default function StoriesContent() {
             >
               All
             </button>
-            {GENRES.slice(0, 8).map((g) => (
+            {genresList.slice(0, 8).map((g: Genre) => (
               <button
                 key={g.id}
                 className={`filter-chip ${activeGenre === g.slug ? 'active' : ''}`}
@@ -97,7 +106,7 @@ export default function StoriesContent() {
 
         {filteredStories.length > 0 ? (
           <div className="stories-grid">
-            {filteredStories.map((story) => (
+            {filteredStories.map((story: Story) => (
               <StoryCard key={story.id} story={story} />
             ))}
           </div>

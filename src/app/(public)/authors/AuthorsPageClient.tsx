@@ -3,9 +3,14 @@
 import React from 'react';
 import Image from 'next/image';
 import StoryCard from '@/components/StoryCard';
-import { AUTHORS, getStoriesByAuthor } from '@/lib/data';
+import { Author, Story } from '@/lib/types';
 
-export default function AuthorsPage() {
+interface AuthorsPageClientProps {
+  authors: Author[];
+  stories: Story[];
+}
+
+export default function AuthorsPageClient({ authors, stories }: AuthorsPageClientProps) {
   return (
     <div className="authors-page">
       <div className="container">
@@ -15,14 +20,16 @@ export default function AuthorsPage() {
         </div>
 
         <div className="authors-list">
-          {AUTHORS.map((author) => {
-            const authorStories = getStoriesByAuthor(author.id);
+          {authors.map((author) => {
+            const authorStories = stories.filter(
+              (s) => s.authorId === author.id || s.author.toLowerCase() === author.name.toLowerCase()
+            );
             return (
               <section key={author.id} className="author-block">
                 <div className="author-profile">
                   <div className="author-avatar-wrap">
                     <Image
-                      src={author.avatar}
+                      src={author.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80'}
                       alt={author.name}
                       width={80}
                       height={80}
@@ -32,7 +39,9 @@ export default function AuthorsPage() {
                   <div className="author-info">
                     <h2>{author.name}</h2>
                     <p className="author-bio">{author.bio}</p>
-                    <span className="author-story-count">{author.storyCount} Stories Published</span>
+                    <span className="author-story-count">
+                      {authorStories.length || author.storyCount} Stories Published
+                    </span>
                   </div>
                 </div>
 
@@ -100,6 +109,8 @@ export default function AuthorsPage() {
         .author-avatar {
           border-radius: 50%;
           object-fit: cover;
+          width: 80px;
+          height: 80px;
         }
 
         .author-info h2 {

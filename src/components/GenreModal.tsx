@@ -4,11 +4,9 @@ import React from 'react';
 import Link from 'next/link';
 import { useModal } from '@/context/ModalContext';
 import { getStoriesByGenre } from '@/lib/data';
-import { useLanguage } from '@/context/LanguageContext';
 
 export default function GenreModal() {
   const { selectedGenre, isGenreModalOpen, closeGenreModal, openStoryModal } = useModal();
-  const { t } = useLanguage();
 
   if (!isGenreModalOpen || !selectedGenre) return null;
 
@@ -45,7 +43,7 @@ export default function GenreModal() {
           </div>
           <div>
             <span className="genre-pill-tag">Category Overview</span>
-            <h2 className="genre-modal-title">{t(selectedGenre.name.toLowerCase().replace(' ', '')) || selectedGenre.name}</h2>
+            <h2 className="genre-modal-title">{selectedGenre.name}</h2>
           </div>
         </div>
 
@@ -58,9 +56,9 @@ export default function GenreModal() {
           </div>
           <div className="genre-stat-item">
             <span className="stat-number">
-              {genreStories.reduce((acc, s) => acc + s.episodes.length, 0)}
+              {genreStories.reduce((acc, s) => acc + (s.episodes?.length || 0), 0)}
             </span>
-            <span className="stat-label">Total {t('episodes')}</span>
+            <span className="stat-label">Total Episodes</span>
           </div>
           <div className="genre-stat-item">
             <span className="stat-number">Free & Premium</span>
@@ -70,7 +68,7 @@ export default function GenreModal() {
 
         {/* Featured Stories in this Genre */}
         <div className="genre-modal-stories-section">
-          <h3>Popular in {t(selectedGenre.name.toLowerCase().replace(' ', '')) || selectedGenre.name}</h3>
+          <h3>Popular in {selectedGenre.name}</h3>
           {genreStories.length > 0 ? (
             <div className="genre-stories-mini-list">
               {genreStories.map((story) => (
@@ -84,14 +82,14 @@ export default function GenreModal() {
                 >
                   <div className="mini-card-text">
                     <h4>{story.title}</h4>
-                    <p>{t('by')} {story.author} • {story.episodes.length} {t('episodes')}</p>
+                    <p>By {story.author} • {story.episodes?.length || 0} Episodes</p>
                   </div>
-                  <span className="mini-read-btn">→</span>
+                  <span className="mini-read-btn">Read →</span>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="no-stories-text">{t('noStories')}</p>
+            <p className="no-stories-text">More stories coming soon to this category!</p>
           )}
         </div>
 
@@ -104,7 +102,7 @@ export default function GenreModal() {
             rel="noopener noreferrer"
             onClick={closeGenreModal}
           >
-            Browse All {t(selectedGenre.name.toLowerCase().replace(' ', '')) || selectedGenre.name} Stories in New Page ↗
+            Browse All {selectedGenre.name} Stories in New Page ↗
           </Link>
         </div>
       </div>

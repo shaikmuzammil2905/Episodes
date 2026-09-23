@@ -1,50 +1,49 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import Link from 'next/link';
 import HeroSection from '@/components/HeroSection';
 import StoryCard from '@/components/StoryCard';
-import { STORIES, GENRES } from '@/lib/data';
 import { useModal } from '@/context/ModalContext';
-import { useLanguage } from '@/context/LanguageContext';
+import type { Story, Genre } from '@/lib/types';
 
-export default function HomePage() {
+interface HomePageClientProps {
+  stories: Story[];
+  genres: Genre[];
+  languageNames: string[];
+  categoryNames: string[];
+}
+
+export default function HomePageClient({ stories, genres, languageNames, categoryNames }: HomePageClientProps) {
   const { openGenreModal } = useModal();
-  const { selectedLanguage, setLanguage, t } = useLanguage();
-  const [selectedCategory, setSelectedCategory] = useState<string>('Novels');
-
-  // Derive available languages from STORIES
-  const availableLanguages = useMemo(() => {
-    const langs = new Set<string>();
-    STORIES.forEach(s => langs.add(s.language));
-    return ['All Languages', ...Array.from(langs).filter(l => l !== 'Short Story')];
-  }, []);
-
-  const categories = ['Novels', 'Long Stories', 'Short Stories', 'Fun Stories'];
+  const [selectedCategory, setSelectedCategory] = useState<string>(categoryNames[0] || 'Novels');
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('All Languages');
 
   // Filter logic
   const filteredStories = useMemo(() => {
-    let result = STORIES;
+    let result = stories;
 
     // Filter by language
     if (selectedLanguage !== 'All Languages') {
       result = result.filter(s => s.language === selectedLanguage);
     }
 
-    // Filter by category
-    if (selectedCategory === 'Short Stories') {
-      result = result.filter(s => s.genre === 'Short Stories' || s.language === 'Short Story' || s.tags.includes('Short Read'));
-    } else if (selectedCategory === 'Long Stories') {
-      result = result.filter(s => parseInt(s.readingTime || '0') > 20 || s.episodes.length > 2);
-    } else if (selectedCategory === 'Fun Stories') {
-      result = result.filter(s => s.genre === 'Comedy' || s.tags.includes('Fun'));
-    } else {
-      // Novels (default)
-      result = result.filter(s => s.genre !== 'Short Stories' && s.language !== 'Short Story');
+    // Filter by category (flexible matching)
+    if (selectedCategory) {
+      const cat = selectedCategory.toLowerCase();
+      if (cat === 'short stories') {
+        result = result.filter(s => s.genre?.toLowerCase().includes('short') || s.tags?.includes('Short Read'));
+      } else if (cat === 'long stories') {
+        result = result.filter(s => parseInt(s.readingTime || '0') > 20 || s.episodes.length > 2);
+      } else if (cat === 'fun stories') {
+        result = result.filter(s => s.genre?.toLowerCase().includes('comedy') || s.tags?.includes('Fun'));
+      } else {
+        // Default: show all that aren't explicitly short stories
+        result = result.filter(s => !s.genre?.toLowerCase().includes('short'));
+      }
     }
 
     return result;
-  }, [selectedLanguage, selectedCategory]);
+  }, [selectedLanguage, selectedCategory, stories]);
 
   const popularStories = filteredStories.filter(s => s.featured);
   const trendingStories = filteredStories.filter(s => s.recommended);
@@ -56,21 +55,16 @@ export default function HomePage() {
       <nav className="compact-story-nav">
         <div className="container">
           <ul className="story-nav-list">
-            {categories.map(cat => {
-              const translatedCat = cat === 'Novels' ? t('novels') 
-                : cat === 'Long Stories' ? t('longStories')
-                : cat === 'Short Stories' ? t('shortStories')
-                : t('funStories');
-              return (
+            {categoryNames.map(cat => (
               <li key={cat}>
                 <button
                   className={`story-nav-btn ${selectedCategory === cat ? 'active' : ''}`}
                   onClick={() => setSelectedCategory(cat)}
                 >
-                  {translatedCat}
+                  {cat}
                 </button>
               </li>
-            )})}
+            ))}
           </ul>
         </div>
       </nav>
@@ -82,16 +76,16 @@ export default function HomePage() {
       <section className="language-filter-section">
         <div className="container">
           <div className="language-filter-wrapper">
-            <label className="language-label" htmlFor="language-select">{t('language')}</label>
+            <label className="language-label" htmlFor="language-select">Language</label>
             <div className="select-wrapper">
               <select 
                 id="language-select" 
                 className="language-select"
                 value={selectedLanguage}
-                onChange={(e) => setLanguage(e.target.value)}
+                onChange={(e) => setSelectedLanguage(e.target.value)}
               >
-                {availableLanguages.map(lang => (
-                  <option key={lang} value={lang}>{lang === 'All Languages' ? t('allLanguages') : lang}</option>
+                {languageNames.map(lang => (
+                  <option key={lang} value={lang}>{lang}</option>
                 ))}
               </select>
             </div>
@@ -103,7 +97,7 @@ export default function HomePage() {
       <section className="section bg-main pt-0">
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">{t('popularNovels')}</h2>
+            <h2 className="section-title">Popular Novels</h2>
           </div>
           {popularStories.length > 0 ? (
             <div className="stories-grid">
@@ -112,13 +106,7 @@ export default function HomePage() {
               ))}
             </div>
           ) : (
-            <div className="empty-state">
-              {t('noStories')}
-              <br/><br/>
-              <button className="btn-secondary" onClick={() => setLanguage('All Languages')}>
-                {t('viewAllLanguages')}
-              </button>
-            </div>
+            <div className="empty-state">No popular stories found for this filter.</div>
           )}
         </div>
       </section>
@@ -127,7 +115,7 @@ export default function HomePage() {
       <section className="section bg-main">
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">{t('trendingStories')}</h2>
+            <h2 className="section-title">Trending Stories</h2>
           </div>
           {trendingStories.length > 0 ? (
             <div className="stories-grid">
@@ -136,13 +124,7 @@ export default function HomePage() {
               ))}
             </div>
           ) : (
-             <div className="empty-state">
-              {t('noStories')}
-              <br/><br/>
-              <button className="btn-secondary" onClick={() => setLanguage('All Languages')}>
-                {t('viewAllLanguages')}
-              </button>
-            </div>
+            <div className="empty-state">No trending stories found for this filter.</div>
           )}
         </div>
       </section>
@@ -151,7 +133,7 @@ export default function HomePage() {
       <section className="section bg-main">
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">{t('latestStories')}</h2>
+            <h2 className="section-title">Latest Novel Chapters & Stories</h2>
           </div>
           {latestStories.length > 0 ? (
             <div className="stories-grid">
@@ -160,13 +142,7 @@ export default function HomePage() {
               ))}
             </div>
           ) : (
-             <div className="empty-state">
-              {t('noStories')}
-              <br/><br/>
-              <button className="btn-secondary" onClick={() => setLanguage('All Languages')}>
-                {t('viewAllLanguages')}
-              </button>
-            </div>
+            <div className="empty-state">No latest stories found for this filter.</div>
           )}
         </div>
       </section>
@@ -175,10 +151,10 @@ export default function HomePage() {
       <section id="genres" className="section genres-section bg-cream">
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">{t('discoverByGenre')}</h2>
+            <h2 className="section-title">Discover by Genre</h2>
           </div>
           <div className="genre-chips-container">
-            {GENRES.map((genre) => (
+            {genres.map((genre) => (
               <button
                 key={genre.id}
                 className="genre-chip"
@@ -197,7 +173,7 @@ export default function HomePage() {
                   {genre.iconName === 'Feather' && '🪶'}
                   {genre.iconName === 'Clock' && '⏱️'}
                 </span>
-                {t(genre.name.toLowerCase().replace(' ', '')) || genre.name}
+                {genre.name}
               </button>
             ))}
           </div>

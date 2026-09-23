@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { Story } from '@/lib/types';
 import { useModal } from '@/context/ModalContext';
 import ScrollObserver from '@/components/ScrollObserver';
-import { useLanguage } from '@/context/LanguageContext';
 
 interface StoryCardProps {
   story: Story;
@@ -13,7 +12,6 @@ interface StoryCardProps {
 
 export default function StoryCard({ story }: StoryCardProps) {
   const { openStoryModal } = useModal();
-  const { t } = useLanguage();
 
   return (
     <ScrollObserver animationClass="fade-up">
@@ -28,7 +26,7 @@ export default function StoryCard({ story }: StoryCardProps) {
           />
           <div className="badges-wrapper">
             <span className={`badge ${story.isPremium ? 'badge-premium' : 'badge-free'}`}>
-              {story.isPremium ? t('premium') : t('free')}
+              {story.isPremium ? 'Premium' : 'Free'}
             </span>
             <span className="badge badge-genre">{story.genre}</span>
           </div>
@@ -37,7 +35,7 @@ export default function StoryCard({ story }: StoryCardProps) {
         <div className="card-content">
           <div className="card-header">
             <h3 className="story-title">{story.title}</h3>
-            <p className="author-name">{t('by')} {story.author}</p>
+            <p className="author-name">By {story.author}</p>
           </div>
 
           <p className="story-description">{story.shortDescription}</p>
@@ -48,10 +46,10 @@ export default function StoryCard({ story }: StoryCardProps) {
                 <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
               </svg>
-              {story.episodes.length} {story.episodes.length === 1 ? t('episode') : t('episodes')}
+              {story.episodes.length} {story.episodes.length === 1 ? 'Episode' : 'Episodes'}
             </span>
             <span className="read-btn">
-              {t('readNow')}
+              Read Now
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
