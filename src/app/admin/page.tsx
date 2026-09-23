@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { BookOpen, Languages, Layers, Tags, Users } from 'lucide-react'
 import Link from 'next/link'
+import SeedDatabaseButton from './SeedDatabaseButton'
 
 async function getStats() {
   const supabase = await createClient()
@@ -37,6 +38,8 @@ export default async function AdminDashboard() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-8">Dashboard Overview</h1>
+
+      <SeedDatabaseButton isDatabaseEmpty={stats.totalStories === 0 && stats.categories === 0} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <StatCard
