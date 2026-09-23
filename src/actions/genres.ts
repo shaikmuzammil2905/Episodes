@@ -30,7 +30,7 @@ export async function createGenre(formData: FormData) {
   if (error) return { error: error.message }
 
   revalidatePath('/admin/genres')
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
   revalidatePath('/stories')
   revalidatePath('/genres')
   
@@ -54,7 +54,7 @@ export async function updateGenre(id: string, formData: FormData) {
   if (error) return { error: error.message }
 
   revalidatePath('/admin/genres')
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
   revalidatePath('/stories')
   revalidatePath('/genres')
   
@@ -72,7 +72,7 @@ export async function deleteGenre(id: string) {
   if (error) return { error: error.message }
 
   revalidatePath('/admin/genres')
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
   revalidatePath('/stories')
   revalidatePath('/genres')
   

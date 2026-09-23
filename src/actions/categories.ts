@@ -32,7 +32,7 @@ export async function createCategory(formData: FormData) {
   if (error) return { error: error.message }
 
   revalidatePath('/admin/categories')
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
   revalidatePath('/stories')
   
   return { data }
@@ -57,7 +57,7 @@ export async function updateCategory(id: string, formData: FormData) {
   if (error) return { error: error.message }
 
   revalidatePath('/admin/categories')
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
   revalidatePath('/stories')
   
   return { data }
@@ -74,7 +74,7 @@ export async function deleteCategory(id: string) {
   if (error) return { error: error.message }
 
   revalidatePath('/admin/categories')
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
   revalidatePath('/stories')
   
   return { success: true }

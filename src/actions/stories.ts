@@ -112,7 +112,7 @@ export async function createStory(formData: FormData) {
   }
 
   revalidatePath('/admin/stories')
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
   revalidatePath('/stories')
 
   return { data }
@@ -178,7 +178,7 @@ export async function updateStory(id: string, formData: FormData) {
   }
 
   revalidatePath('/admin/stories')
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
   revalidatePath('/stories')
 
   return { data }
@@ -197,7 +197,7 @@ export async function deleteStory(id: string) {
   if (error) return { error: error.message }
 
   revalidatePath('/admin/stories')
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
   revalidatePath('/stories')
 
   return { success: true }

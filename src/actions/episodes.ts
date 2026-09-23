@@ -68,7 +68,7 @@ export async function createEpisode(formData: FormData) {
 
   revalidatePath('/admin/episodes')
   revalidatePath('/admin/stories')
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
   revalidatePath('/stories')
 
   return { data }
@@ -116,7 +116,7 @@ export async function updateEpisode(id: string, formData: FormData) {
 
   revalidatePath('/admin/episodes')
   revalidatePath('/admin/stories')
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
   revalidatePath('/stories')
 
   return { data }
@@ -131,7 +131,7 @@ export async function deleteEpisode(id: string) {
 
   revalidatePath('/admin/episodes')
   revalidatePath('/admin/stories')
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
   revalidatePath('/stories')
 
   return { success: true }

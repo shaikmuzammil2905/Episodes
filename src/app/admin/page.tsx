@@ -80,12 +80,12 @@ export default async function AdminDashboard() {
 
 function StatCard({ title, value, icon, subtext, link }: { title: string, value: number, icon: React.ReactNode, subtext?: string, link: string }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-start justify-between hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 flex items-start justify-between hover:shadow-md transition-shadow">
       <div>
-        <p className="text-sm font-medium text-gray-500 mb-1">{title}</p>
-        <h3 className="text-3xl font-bold text-gray-900">{value}</h3>
-        {subtext && <p className="text-sm text-gray-500 mt-1">{subtext}</p>}
-        <div className="mt-4">
+        <p className="text-xs md:text-sm font-medium text-gray-500 mb-1">{title}</p>
+        <h3 className="text-2xl md:text-3xl font-bold text-gray-900">{value}</h3>
+        {subtext && <p className="text-xs md:text-sm text-gray-500 mt-1">{subtext}</p>}
+        <div className="mt-3 md:mt-4">
           <Link href={link} className="text-sm font-medium text-[#f55139] hover:text-[#e0452d]">
             View all →
           </Link>

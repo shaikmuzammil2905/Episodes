@@ -31,7 +31,7 @@ export async function createAuthor(formData: FormData) {
   if (error) return { error: error.message }
 
   revalidatePath('/admin/authors')
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
   revalidatePath('/authors')
   
   return { data }
@@ -55,7 +55,7 @@ export async function updateAuthor(id: string, formData: FormData) {
   if (error) return { error: error.message }
 
   revalidatePath('/admin/authors')
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
   revalidatePath('/authors')
   
   return { data }
@@ -72,7 +72,7 @@ export async function deleteAuthor(id: string) {
   if (error) return { error: error.message }
 
   revalidatePath('/admin/authors')
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
   revalidatePath('/authors')
   
   return { success: true }

@@ -30,7 +30,7 @@ export async function createLanguage(formData: FormData) {
   if (error) return { error: error.message }
 
   revalidatePath('/admin/languages')
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
   revalidatePath('/stories')
   
   return { data }
@@ -53,7 +53,7 @@ export async function updateLanguage(id: string, formData: FormData) {
   if (error) return { error: error.message }
 
   revalidatePath('/admin/languages')
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
   revalidatePath('/stories')
   
   return { data }
@@ -70,7 +70,7 @@ export async function deleteLanguage(id: string) {
   if (error) return { error: error.message }
 
   revalidatePath('/admin/languages')
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
   revalidatePath('/stories')
   
   return { success: true }
