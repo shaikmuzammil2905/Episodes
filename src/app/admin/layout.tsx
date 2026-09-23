@@ -18,7 +18,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-50">
+    <div className="flex flex-col md:flex-row h-[100dvh] bg-gray-50">
       <AdminSidebar userEmail={user.email || ''} />
 
       {/* Main Content */}
