@@ -1,3 +1,4 @@
+import './admin.css'
 import Link from 'next/link'
 import { BookOpen, Users, Tags, Languages, Layers, LogOut, Home, LayoutDashboard, LayoutList } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
