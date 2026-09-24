@@ -18,12 +18,12 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex flex-col md:flex-row h-[100dvh] bg-gray-50">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
       <AdminSidebar userEmail={user.email || ''} />
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden relative">
-        <div className="flex-1 overflow-y-auto bg-gray-50 p-4 md:p-8">
+      <main className="flex-1 flex flex-col w-full">
+        <div className="flex-1 bg-gray-50 p-4 md:p-8">
           {children}
         </div>
       </main>
