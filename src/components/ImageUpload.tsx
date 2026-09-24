@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Upload, X, Loader2, Image as ImageIcon } from 'lucide-react'
+import { Upload, X, Loader2, Image as ImageIcon, ImageOff } from 'lucide-react'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 
@@ -16,6 +16,8 @@ export function ImageUpload({ onUpload, onRemove, currentImage, className = '' }
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [localPreview, setLocalPreview] = useState<string | null>(null)
+  const [imageFailed, setImageFailed] = useState(false)
+  
   const fileInputRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
 
@@ -27,6 +29,11 @@ export function ImageUpload({ onUpload, onRemove, currentImage, className = '' }
       }
     }
   }, [localPreview])
+
+  // Reset image fail state if the image source changes
+  useEffect(() => {
+    setImageFailed(false)
+  }, [currentImage, localPreview])
 
   const validateFile = (file: File) => {
     if (!file.type.startsWith('image/')) {
@@ -53,6 +60,7 @@ export function ImageUpload({ onUpload, onRemove, currentImage, className = '' }
     setLocalPreview(previewUrl)
     setIsUploading(true)
     setError(null)
+    setImageFailed(false)
 
     try {
       // Create a highly unique filename to prevent caching issues
@@ -100,7 +108,12 @@ export function ImageUpload({ onUpload, onRemove, currentImage, className = '' }
 
   const handleRemoveClick = () => {
     setLocalPreview(null)
+    setError(null)
     onRemove()
+  }
+  
+  const triggerFilePicker = () => {
+    fileInputRef.current?.click()
   }
 
   // Display image is either the optimistic local preview or the saved image
@@ -108,64 +121,101 @@ export function ImageUpload({ onUpload, onRemove, currentImage, className = '' }
 
   return (
     <div className={`space-y-4 ${className}`}>
+      
+      {/* ALWAYS render the hidden file input so the Replace button can trigger it */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        className="hidden"
+        accept="image/jpeg,image/png,image/webp"
+        onChange={handleUpload}
+        disabled={isUploading}
+      />
+
       {displayImage ? (
-        <div className="relative inline-block group">
-          <div className="relative w-40 h-40 overflow-hidden rounded-xl border-2 border-gray-200 shadow-sm transition-all group-hover:border-[#f55139]">
-            <Image
-              src={displayImage}
-              alt="Uploaded media"
-              fill
-              className={`object-cover transition-opacity duration-300 ${isUploading ? 'opacity-50 blur-sm' : 'opacity-100'}`}
-              sizes="160px"
-              unoptimized={displayImage.startsWith('blob:')}
-            />
+        <div className="flex flex-col gap-3">
+          <div className="relative w-40 h-56 overflow-hidden rounded-xl border border-gray-200 shadow-sm bg-gray-50 flex items-center justify-center">
+            {imageFailed ? (
+              <div className="flex flex-col items-center text-gray-400">
+                <ImageOff className="w-8 h-8 mb-2 opacity-50" />
+                <span className="text-xs font-medium px-2 text-center">Image unavailable</span>
+              </div>
+            ) : (
+              <Image
+                src={displayImage}
+                alt="Story cover"
+                fill
+                className={`object-cover transition-opacity duration-300 ${isUploading ? 'opacity-50 blur-sm' : 'opacity-100'}`}
+                sizes="160px"
+                unoptimized={displayImage.startsWith('blob:') || displayImage.startsWith('data:')}
+                onError={() => setImageFailed(true)}
+              />
+            )}
+            
             {isUploading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-                <Loader2 className="w-8 h-8 text-white animate-spin drop-shadow-md" />
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 backdrop-blur-[2px]">
+                <Loader2 className="w-8 h-8 text-white animate-spin drop-shadow-md mb-2" />
+                <span className="text-white text-xs font-bold tracking-wide drop-shadow-md">UPLOADING...</span>
               </div>
             )}
           </div>
-          {!isUploading && (
+          
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={triggerFilePicker}
+              disabled={isUploading}
+              className="inline-flex items-center px-3 py-1.5 bg-gray-100 border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50"
+            >
+              <Upload className="w-4 h-4 mr-1.5" />
+              Replace Image
+            </button>
             <button
               type="button"
               onClick={handleRemoveClick}
-              className="absolute -top-3 -right-3 bg-white text-red-500 rounded-full p-1.5 shadow-md border border-gray-100 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all z-10"
-              title="Remove image"
+              disabled={isUploading}
+              className="inline-flex items-center px-3 py-1.5 bg-red-50 border border-red-200 text-red-600 text-sm font-medium rounded-md hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
             >
-              <X className="w-4 h-4" />
+              <X className="w-4 h-4 mr-1.5" />
+              Remove
             </button>
-          )}
+          </div>
         </div>
       ) : (
         <div className="w-full">
-          <label className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl cursor-pointer transition-all ${error ? 'border-red-300 bg-red-50 hover:bg-red-100' : 'border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-[#f55139]'}`}>
+          <label className={`flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-xl cursor-pointer transition-all ${error ? 'border-red-300 bg-red-50 hover:bg-red-100' : 'border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-[#f55139]'}`}>
             <div className="flex flex-col items-center justify-center pt-5 pb-6 px-4 text-center">
               {isUploading ? (
-                <Loader2 className="w-8 h-8 text-[#f55139] animate-spin mb-3" />
+                <>
+                  <Loader2 className="w-8 h-8 text-[#f55139] animate-spin mb-3" />
+                  <span className="text-[#f55139] text-sm font-bold">Uploading...</span>
+                </>
               ) : (
-                <div className="p-3 bg-white rounded-full shadow-sm mb-3">
-                  <ImageIcon className="w-6 h-6 text-[#f55139]" />
-                </div>
+                <>
+                  <div className="p-3 bg-white rounded-full shadow-sm mb-3">
+                    <ImageIcon className="w-6 h-6 text-[#f55139]" />
+                  </div>
+                  <p className="mb-1 text-sm text-gray-700">
+                    <span className="font-semibold text-[#f55139]">Tap to upload</span> or drag and drop
+                  </p>
+                  <p className="text-xs text-gray-500 font-medium">JPG, PNG, WEBP (Max 5MB)</p>
+                </>
               )}
-              <p className="mb-1 text-sm text-gray-700">
-                <span className="font-semibold text-[#f55139]">Tap to upload</span> or drag and drop
-              </p>
-              <p className="text-xs text-gray-500 font-medium">JPG, PNG, WEBP (Max 5MB)</p>
             </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              className="hidden"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={handleUpload}
-              disabled={isUploading}
+            {/* The input here is not strictly needed since we use the hidden one, but we map it via onClick anyway */}
+            <div 
+              className="absolute inset-0 z-10" 
+              onClick={(e) => {
+                e.preventDefault();
+                triggerFilePicker();
+              }} 
             />
           </label>
         </div>
       )}
       
       {error && (
-        <div className="p-3 rounded-lg bg-red-50 border border-red-100 text-sm text-red-600 flex items-start">
+        <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700 flex items-start shadow-sm">
           <X className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
           <p>{error}</p>
         </div>
