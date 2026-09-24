@@ -158,3 +158,29 @@ export async function deleteEpisode(id: string) {
 
   return { success: true }
 }
+
+export async function toggleEpisodeStatus(id: string, currentStatus: string) {
+  const supabase = await createClient()
+  const newStatus = currentStatus === 'published' ? 'draft' : 'published'
+  
+  const updateData: any = { status: newStatus }
+  if (newStatus === 'published') {
+    updateData.published_at = new Date().toISOString()
+  }
+
+  const { data, error } = await supabase
+    .from('episodes')
+    .update(updateData)
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) return { error: error.message }
+
+  revalidatePath('/admin/episodes')
+  revalidatePath('/admin/stories')
+  revalidatePath('/', 'layout')
+  revalidatePath('/stories')
+
+  return { data }
+}

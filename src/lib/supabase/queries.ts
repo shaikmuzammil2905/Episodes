@@ -78,7 +78,12 @@ export async function getPublicStories(filters?: {
     return []
   }
 
-  let stories = (data || []).map(transformStory)
+  let stories = (data || []).map(row => {
+    if (row.episodes) {
+      row.episodes = row.episodes.filter((ep: any) => ep.status === 'published')
+    }
+    return transformStory(row)
+  })
 
   // Apply language filter after fetch (since we need the language name)
   if (filters?.language && filters.language !== 'All Languages') {

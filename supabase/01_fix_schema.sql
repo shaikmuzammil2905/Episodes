@@ -69,7 +69,7 @@ ALTER TABLE public.episodes ADD COLUMN IF NOT EXISTS title TEXT;
 ALTER TABLE public.episodes ADD COLUMN IF NOT EXISTS episode_number INTEGER;
 ALTER TABLE public.episodes ADD COLUMN IF NOT EXISTS content TEXT;
 ALTER TABLE public.episodes ADD COLUMN IF NOT EXISTS summary TEXT;
-ALTER TABLE public.episodes ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'draft';
+ALTER TABLE public.episodes ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'published';
 ALTER TABLE public.episodes ADD COLUMN IF NOT EXISTS access_type TEXT DEFAULT 'free';
 ALTER TABLE public.episodes ADD COLUMN IF NOT EXISTS cover_url TEXT;
 ALTER TABLE public.episodes ADD COLUMN IF NOT EXISTS cover_public_id TEXT;

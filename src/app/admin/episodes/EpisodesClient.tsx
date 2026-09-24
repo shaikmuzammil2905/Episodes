@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { createEpisode, updateEpisode, deleteEpisode } from '@/actions/episodes'
-import { Plus, Edit2, Trash2, Check, X, LayoutList } from 'lucide-react'
+import { createEpisode, updateEpisode, deleteEpisode, toggleEpisodeStatus } from '@/actions/episodes'
+import { Plus, Edit2, Trash2, Check, X, LayoutList, Loader2 } from 'lucide-react'
 import { ImageUpload } from '@/components/ImageUpload'
 
 interface EpisodeRow {
@@ -18,7 +18,7 @@ interface StoryRef { id: string; title: string }
 
 const defaultForm = {
   story_id: '', episode_number: '1', title: '', slug: '', summary: '', content: '',
-  image_url: '', image_public_id: '', status: 'draft', access_type: 'free', seo_title: '', seo_description: ''
+  image_url: '', image_public_id: '', status: 'published', access_type: 'free', seo_title: '', seo_description: ''
 }
 
 export default function EpisodesClient({ initialEpisodes, stories }: { initialEpisodes: EpisodeRow[]; stories: StoryRef[] }) {
@@ -32,8 +32,14 @@ export default function EpisodesClient({ initialEpisodes, stories }: { initialEp
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
   const [loading, setLoading] = useState(false)
   const [filterStoryId, setFilterStoryId] = useState(storyIdFilter)
+  const [filterStatus, setFilterStatus] = useState('')
+  const [updatingId, setUpdatingId] = useState<string | null>(null)
 
-  const filteredEpisodes = filterStoryId ? episodes.filter(ep => ep.story_id === filterStoryId) : episodes
+  const filteredEpisodes = episodes.filter(ep => {
+    if (filterStoryId && ep.story_id !== filterStoryId) return false
+    if (filterStatus && ep.status !== filterStatus) return false
+    return true
+  })
 
   const getNextAvailableEpisodeNumber = (storyId: string) => {
     if (!storyId) return 1
@@ -114,6 +120,25 @@ export default function EpisodesClient({ initialEpisodes, stories }: { initialEp
     setLoading(false)
   }
 
+  const handleToggleStatus = async (ep: EpisodeRow) => {
+    if (updatingId === ep.id) return
+    setUpdatingId(ep.id)
+    
+    // Optimistic update
+    const newStatus = ep.status === 'published' ? 'draft' : 'published'
+    setEpisodes(prev => prev.map(e => e.id === ep.id ? { ...e, status: newStatus } : e))
+    
+    const result = await toggleEpisodeStatus(ep.id, ep.status)
+    if (result.error) {
+      showMsg('error', 'Failed to update status: ' + result.error)
+      // Revert optimistic update
+      setEpisodes(prev => prev.map(e => e.id === ep.id ? { ...e, status: ep.status } : e))
+    } else {
+      showMsg('success', newStatus === 'published' ? 'Episode published successfully.' : 'Episode moved to draft.')
+    }
+    setUpdatingId(null)
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -127,11 +152,16 @@ export default function EpisodesClient({ initialEpisodes, stories }: { initialEp
       </div>
       {message && <div className={`mb-4 p-3 rounded-lg text-sm ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>{message.text}</div>}
 
-      {/* Filter by story */}
-      <div className="mb-4">
-        <select value={filterStoryId} onChange={e => setFilterStoryId(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#f55139]">
+      {/* Filters */}
+      <div className="mb-4 flex flex-col sm:flex-row gap-3">
+        <select value={filterStoryId} onChange={e => setFilterStoryId(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#f55139] min-w-[200px]">
           <option value="">All Stories</option>
           {stories.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
+        </select>
+        <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#f55139] min-w-[160px]">
+          <option value="">All Statuses</option>
+          <option value="published">Published</option>
+          <option value="draft">Draft</option>
         </select>
       </div>
 
@@ -191,7 +221,20 @@ export default function EpisodesClient({ initialEpisodes, stories }: { initialEp
                 <td className="px-4 py-3 font-mono text-gray-500">{ep.episode_number}</td>
                 <td className="px-4 py-3 font-medium text-gray-900">{ep.title}</td>
                 <td className="px-4 py-3 text-gray-600">{ep.story?.title || '—'}</td>
-                <td className="px-4 py-3"><span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${ep.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{ep.status}</span></td>
+                <td className="px-4 py-3">
+                  <button 
+                    onClick={() => handleToggleStatus(ep)}
+                    disabled={updatingId === ep.id}
+                    title={ep.status === 'published' ? 'Click to move to Draft' : 'Click to publish episode'}
+                    className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#f55139] ${
+                      updatingId === ep.id ? 'bg-gray-100 text-gray-500 opacity-70 cursor-not-allowed' :
+                      ep.status === 'published' ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                    }`}
+                  >
+                    {updatingId === ep.id && <Loader2 className="w-3 h-3 mr-1 animate-spin" />}
+                    {updatingId === ep.id ? 'UPDATING...' : ep.status.toUpperCase()}
+                  </button>
+                </td>
                 <td className="px-4 py-3"><span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${ep.access_type === 'free' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}`}>{ep.access_type}</span></td>
                 <td className="px-4 py-3 text-right">
                   <button onClick={() => handleEdit(ep)} className="text-blue-600 hover:text-blue-800 mr-2"><Edit2 className="w-4 h-4" /></button>

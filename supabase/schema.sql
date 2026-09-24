@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS public.episodes (
   episode_number INTEGER NOT NULL,
   content TEXT,
   summary TEXT,
-  status TEXT DEFAULT 'draft',
+  status TEXT DEFAULT 'published',
   access_type TEXT DEFAULT 'free',
   cover_url TEXT,
   cover_public_id TEXT,

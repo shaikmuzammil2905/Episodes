@@ -10,6 +10,7 @@ async function getStats() {
     { count: totalStories },
     { count: publishedStories },
     { count: totalEpisodes },
+    { count: publishedEpisodes },
     { count: authors },
     { count: categories },
     { count: languages },
@@ -17,6 +18,7 @@ async function getStats() {
     supabase.from('stories').select('*', { count: 'exact', head: true }),
     supabase.from('stories').select('*', { count: 'exact', head: true }).eq('status', 'published'),
     supabase.from('episodes').select('*', { count: 'exact', head: true }),
+    supabase.from('episodes').select('*', { count: 'exact', head: true }).eq('status', 'published'),
     supabase.from('authors').select('*', { count: 'exact', head: true }),
     supabase.from('categories').select('*', { count: 'exact', head: true }),
     supabase.from('languages').select('*', { count: 'exact', head: true }),
@@ -26,6 +28,7 @@ async function getStats() {
     totalStories: totalStories || 0,
     publishedStories: publishedStories || 0,
     totalEpisodes: totalEpisodes || 0,
+    publishedEpisodes: publishedEpisodes || 0,
     authors: authors || 0,
     categories: categories || 0,
     languages: languages || 0,
@@ -53,6 +56,7 @@ export default async function AdminDashboard() {
           title="Total Episodes"
           value={stats.totalEpisodes}
           icon={<Layers className="w-8 h-8 text-indigo-500" />}
+          subtext={`${stats.publishedEpisodes} published, ${stats.totalEpisodes - stats.publishedEpisodes} draft`}
           link="/admin/episodes"
         />
         <StatCard
