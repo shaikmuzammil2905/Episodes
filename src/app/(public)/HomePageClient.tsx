@@ -18,9 +18,11 @@ export default function HomePageClient({ stories, genres, languageNames, categor
   const [selectedCategory, setSelectedCategory] = useState<string>(categoryNames[0] || 'Novels');
   const [selectedLanguage, setSelectedLanguage] = useState<string>('All Languages');
 
-  // Simple translations for Telugu
+  // Simple translations for Telugu and Hindi
   const t = (text: string) => {
-    if (selectedLanguage.toLowerCase() === 'telugu') {
+    const lang = selectedLanguage.toLowerCase();
+    
+    if (lang === 'telugu') {
       switch (text) {
         case 'Language': return 'భాష';
         case 'Popular Novels': return 'ప్రసిద్ధ నవలలు';
@@ -33,6 +35,21 @@ export default function HomePageClient({ stories, genres, languageNames, categor
         default: return text;
       }
     }
+    
+    if (lang === 'hindi') {
+      switch (text) {
+        case 'Language': return 'भाषा';
+        case 'Popular Novels': return 'लोकप्रिय उपन्यास';
+        case 'Trending Stories': return 'ट्रेंडिंग कहानियाँ';
+        case 'Latest Novel Chapters & Stories': return 'नवीनतम उपन्यास अध्याय और कहानियाँ';
+        case 'Discover by Genre': return 'शैली के अनुसार खोजें';
+        case 'No popular stories found for this filter.': return 'इस फ़िल्टर के लिए कोई लोकप्रिय कहानियाँ नहीं मिलीं।';
+        case 'No trending stories found for this filter.': return 'इस फ़िल्टर के लिए कोई ट्रेंडिंग कहानियाँ नहीं मिलीं।';
+        case 'No latest stories found for this filter.': return 'इस फ़िल्टर के लिए कोई नवीनतम कहानियाँ नहीं मिलीं।';
+        default: return text;
+      }
+    }
+    
     return text;
   };
 
