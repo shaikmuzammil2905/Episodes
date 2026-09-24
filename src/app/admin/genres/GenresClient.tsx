@@ -61,7 +61,7 @@ export default function GenresClient({ initialGenres }: { initialGenres: Genre[]
           </form>
         </div>
       )}
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b border-gray-200"><tr><th className="px-6 py-3 text-left font-semibold text-gray-600">Genre</th><th className="px-6 py-3 text-left font-semibold text-gray-600">Slug</th><th className="px-6 py-3 text-left font-semibold text-gray-600">Status</th><th className="px-6 py-3 text-right font-semibold text-gray-600">Actions</th></tr></thead>
           <tbody className="divide-y divide-gray-100">

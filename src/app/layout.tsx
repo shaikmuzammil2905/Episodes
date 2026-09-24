@@ -28,7 +28,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/assets/logo.png" />
       </head>
       <body>
         {children}
