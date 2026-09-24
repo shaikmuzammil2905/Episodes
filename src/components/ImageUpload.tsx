@@ -182,8 +182,8 @@ export function ImageUpload({ onUpload, onRemove, currentImage, className = '' }
           </div>
         </div>
       ) : (
-        <div className="w-full">
-          <label className={`flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-xl cursor-pointer transition-all ${error ? 'border-red-300 bg-red-50 hover:bg-red-100' : 'border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-[#f55139]'}`}>
+        <div className="w-full relative">
+          <label className={`flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-xl cursor-pointer transition-all relative ${error ? 'border-red-300 bg-red-50 hover:bg-red-100' : 'border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-[#f55139]'}`}>
             <div className="flex flex-col items-center justify-center pt-5 pb-6 px-4 text-center">
               {isUploading ? (
                 <>
