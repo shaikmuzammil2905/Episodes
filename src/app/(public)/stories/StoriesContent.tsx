@@ -26,9 +26,9 @@ export default function StoriesContent({ initialStories, initialGenres }: Storie
     if (activeGenre) {
       result = result.filter(
         (s: Story) =>
-          s.genreId === activeGenre ||
-          s.language.toLowerCase().replace(/\s+/g, '-') === activeGenre ||
-          s.language.toLowerCase() === activeGenre
+          s.genreId?.toLowerCase() === activeGenre.toLowerCase() ||
+          s.language?.toLowerCase().replace(/\s+/g, '-') === activeGenre.toLowerCase() ||
+          s.language?.toLowerCase() === activeGenre.toLowerCase()
       );
     }
     if (statusFilter) {

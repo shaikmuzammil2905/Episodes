@@ -22,14 +22,17 @@ export default function HomePageClient({ stories, genres, languageNames, categor
   const filteredStories = useMemo(() => {
     let result = stories;
 
-    // Filter by language
-    if (selectedLanguage !== 'All Languages') {
-      result = result.filter(s => s.language === selectedLanguage);
+    // Filter by language (case-insensitive)
+    if (selectedLanguage && selectedLanguage !== 'All Languages') {
+      result = result.filter(s => s.language?.toLowerCase() === selectedLanguage.toLowerCase());
     }
 
-    // Filter by category (flexible matching)
+    // Filter by category
     if (selectedCategory) {
       const cat = selectedCategory.toLowerCase();
+      
+      // Keep hardcoded flexible logic for special UI tabs if they exist,
+      // but also add exact matching for real database categories.
       if (cat === 'short stories') {
         result = result.filter(s => s.genre?.toLowerCase().includes('short') || s.tags?.includes('Short Read'));
       } else if (cat === 'long stories') {
@@ -37,8 +40,14 @@ export default function HomePageClient({ stories, genres, languageNames, categor
       } else if (cat === 'fun stories') {
         result = result.filter(s => s.genre?.toLowerCase().includes('comedy') || s.tags?.includes('Fun'));
       } else {
-        // Default: show all that aren't explicitly short stories
-        result = result.filter(s => !s.genre?.toLowerCase().includes('short'));
+        // For real database categories (e.g., "Novels", "Fantasy", etc)
+        // Check if the story's genre/category matches the selected one.
+        // Fallback: exclude 'short' if no specific match logic is found and it's just a general tab.
+        result = result.filter(s => 
+          s.genre?.toLowerCase() === cat || 
+          s.genreId?.toLowerCase() === cat ||
+          !s.genre?.toLowerCase().includes('short') // fallback for 'Novels' or other general categories
+        );
       }
     }
 
