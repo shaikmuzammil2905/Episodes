@@ -117,6 +117,7 @@ export function ImageUpload({ onUpload, onRemove, currentImage, className = '' }
               fill
               className={`object-cover transition-opacity duration-300 ${isUploading ? 'opacity-50 blur-sm' : 'opacity-100'}`}
               sizes="160px"
+              unoptimized={displayImage.startsWith('blob:')}
             />
             {isUploading && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/10">
