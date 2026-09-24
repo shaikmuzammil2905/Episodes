@@ -190,11 +190,11 @@ export async function getPublicLanguages(): Promise<{ id: string; name: string; 
   return data || []
 }
 
-export async function getPublicCategories(): Promise<{ id: string; name: string; slug: string }[]> {
+export async function getPublicCategories(): Promise<{ id: string; name: string; slug: string; image_url?: string }[]> {
   const supabase = createPublicClient()
   const { data } = await supabase
     .from('categories')
-    .select('id, name, slug')
+    .select('id, name, slug, image_url')
     .eq('status', 'active')
     .order('display_order', { ascending: true })
   

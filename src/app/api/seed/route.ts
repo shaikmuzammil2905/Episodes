@@ -49,7 +49,7 @@ export async function POST(request: Request) {
           slug: a.id,
           name: a.name,
           bio: a.bio,
-          avatar_url: a.avatar
+          image_url: a.avatar
         }))
         const { error: authError } = await supabase.from('authors').upsert(authorsToInsert, { onConflict: 'slug' })
         if (authError) throw new Error(`Authors: ${authError.message}`)

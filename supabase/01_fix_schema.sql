@@ -27,6 +27,8 @@ ALTER TABLE public.categories ADD COLUMN IF NOT EXISTS description TEXT;
 ALTER TABLE public.categories ADD COLUMN IF NOT EXISTS icon_name TEXT;
 ALTER TABLE public.categories ADD COLUMN IF NOT EXISTS display_order INTEGER DEFAULT 0;
 ALTER TABLE public.categories ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active';
+ALTER TABLE public.categories ADD COLUMN IF NOT EXISTS image_url TEXT;
+ALTER TABLE public.categories ADD COLUMN IF NOT EXISTS image_public_id TEXT;
 ALTER TABLE public.categories ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
 ALTER TABLE public.categories ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
 

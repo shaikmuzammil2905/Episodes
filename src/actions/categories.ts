@@ -21,12 +21,13 @@ export async function createCategory(formData: FormData) {
   const slug = formData.get('slug') as string
   const description = formData.get('description') as string
   const image_url = formData.get('image_url') as string
+  const image_public_id = formData.get('image_public_id') as string
   const status = formData.get('status') as string || 'active'
   const display_order = parseInt(formData.get('display_order') as string || '0')
 
   const { data, error } = await supabase
     .from('categories')
-    .insert([{ name, slug, description, image_url, status, display_order }])
+    .insert([{ name, slug, description, image_url, image_public_id, status, display_order }])
     .select()
 
   if (error) return { error: error.message }
@@ -45,12 +46,13 @@ export async function updateCategory(id: string, formData: FormData) {
   const slug = formData.get('slug') as string
   const description = formData.get('description') as string
   const image_url = formData.get('image_url') as string
+  const image_public_id = formData.get('image_public_id') as string
   const status = formData.get('status') as string
   const display_order = parseInt(formData.get('display_order') as string || '0')
 
   const { data, error } = await supabase
     .from('categories')
-    .update({ name, slug, description, image_url, status, display_order })
+    .update({ name, slug, description, image_url, image_public_id, status, display_order })
     .eq('id', id)
     .select()
 

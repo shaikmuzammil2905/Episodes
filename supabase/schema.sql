@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS public.authors (
   slug TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
   bio TEXT,
-  avatar_url TEXT,
-  avatar_public_id TEXT,
+  image_url TEXT,
+  image_public_id TEXT,
   status TEXT DEFAULT 'active',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -25,6 +25,8 @@ CREATE TABLE IF NOT EXISTS public.categories (
   icon_name TEXT,
   display_order INTEGER DEFAULT 0,
   status TEXT DEFAULT 'active',
+  image_url TEXT,
+  image_public_id TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

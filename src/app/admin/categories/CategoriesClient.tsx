@@ -11,6 +11,7 @@ interface Category {
   slug: string
   description: string | null
   image_url: string | null
+  image_public_id: string | null
   status: string
   display_order: number
 }
@@ -19,12 +20,12 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
   const [categories, setCategories] = useState<Category[]>(initialCategories)
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [formData, setFormData] = useState({ name: '', slug: '', description: '', image_url: '', status: 'active', display_order: '0' })
+  const [formData, setFormData] = useState({ name: '', slug: '', description: '', image_url: '', image_public_id: '', status: 'active', display_order: '0' })
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
   const [loading, setLoading] = useState(false)
 
   const resetForm = () => {
-    setFormData({ name: '', slug: '', description: '', image_url: '', status: 'active', display_order: '0' })
+    setFormData({ name: '', slug: '', description: '', image_url: '', image_public_id: '', status: 'active', display_order: '0' })
     setShowForm(false)
     setEditingId(null)
   }
@@ -39,6 +40,12 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!formData.name || !formData.slug) { showMessage('error', 'Name and slug are required.'); return }
+    const displayOrderNum = parseInt(formData.display_order)
+    if (isNaN(displayOrderNum) || displayOrderNum < 0) {
+      showMessage('error', 'Display order must be 0 or greater.')
+      return
+    }
+
     setLoading(true)
     const fd = new FormData()
     Object.entries(formData).forEach(([k, v]) => fd.append(k, v))
@@ -57,7 +64,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
   }
 
   const handleEdit = (cat: Category) => {
-    setFormData({ name: cat.name, slug: cat.slug, description: cat.description || '', image_url: cat.image_url || '', status: cat.status, display_order: String(cat.display_order || 0) })
+    setFormData({ name: cat.name, slug: cat.slug, description: cat.description || '', image_url: cat.image_url || '', image_public_id: cat.image_public_id || '', status: cat.status, display_order: String(cat.display_order || 0) })
     setEditingId(cat.id)
     setShowForm(true)
   }
@@ -104,7 +111,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Display Order</label>
-                <input type="number" value={formData.display_order} onChange={e => setFormData(p => ({ ...p, display_order: e.target.value }))} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#f55139]" />
+                <input type="number" min="0" value={formData.display_order} onChange={e => setFormData(p => ({ ...p, display_order: e.target.value }))} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#f55139]" />
               </div>
             </div>
             <div>
@@ -115,8 +122,8 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
               <label className="block text-sm font-medium text-gray-700 mb-1">Category Image</label>
               <ImageUpload
                 currentImage={formData.image_url || null}
-                onUpload={(url) => setFormData(p => ({ ...p, image_url: url }))}
-                onRemove={() => setFormData(p => ({ ...p, image_url: '' }))}
+                onUpload={(url, publicId) => setFormData(p => ({ ...p, image_url: url, image_public_id: publicId }))}
+                onRemove={() => setFormData(p => ({ ...p, image_url: '', image_public_id: '' }))}
               />
             </div>
             <div className="flex gap-2">
@@ -135,21 +142,36 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
+              <th className="px-6 py-3 text-left font-semibold text-gray-600 w-16">Image</th>
               <th className="px-6 py-3 text-left font-semibold text-gray-600">Category</th>
               <th className="px-6 py-3 text-left font-semibold text-gray-600">Slug</th>
               <th className="px-6 py-3 text-left font-semibold text-gray-600">Status</th>
+              <th className="px-6 py-3 text-center font-semibold text-gray-600">Order</th>
               <th className="px-6 py-3 text-right font-semibold text-gray-600">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {categories.length === 0 ? (
-              <tr><td colSpan={4} className="px-6 py-12 text-center text-gray-400"><Layers className="w-12 h-12 mx-auto mb-3 text-gray-300" /><p className="font-medium">No categories yet</p></td></tr>
+              <tr><td colSpan={6} className="px-6 py-12 text-center text-gray-400"><Layers className="w-12 h-12 mx-auto mb-3 text-gray-300" /><p className="font-medium">No categories yet</p></td></tr>
             ) : categories.map(cat => (
               <tr key={cat.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4">
+                  {cat.image_url ? (
+                    <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-200">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={cat.image_url} alt={cat.name} className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 shrink-0">
+                      <Layers className="w-5 h-5" />
+                    </div>
+                  )}
+                </td>
                 <td className="px-6 py-4 font-medium text-gray-900">{cat.name}</td>
                 <td className="px-6 py-4 text-gray-500">{cat.slug}</td>
                 <td className="px-6 py-4"><span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${cat.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>{cat.status}</span></td>
-                <td className="px-6 py-4 text-right">
+                <td className="px-6 py-4 text-center text-gray-500 font-mono">{cat.display_order}</td>
+                <td className="px-6 py-4 text-right whitespace-nowrap">
                   <button onClick={() => handleEdit(cat)} className="text-blue-600 hover:text-blue-800 mr-3"><Edit2 className="w-4 h-4" /></button>
                   <button onClick={() => handleDelete(cat.id)} className="text-red-500 hover:text-red-700"><Trash2 className="w-4 h-4" /></button>
                 </td>
