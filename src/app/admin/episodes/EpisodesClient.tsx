@@ -35,13 +35,55 @@ export default function EpisodesClient({ initialEpisodes, stories }: { initialEp
 
   const filteredEpisodes = filterStoryId ? episodes.filter(ep => ep.story_id === filterStoryId) : episodes
 
-  const resetForm = () => { setFormData({ ...defaultForm, story_id: filterStoryId }); setShowForm(false); setEditingId(null) }
-  const showMsg = (type: 'success' | 'error', text: string) => { setMessage({ type, text }); setTimeout(() => setMessage(null), 3000) }
+  const getNextAvailableEpisodeNumber = (storyId: string) => {
+    if (!storyId) return 1
+    const storyEpisodes = episodes.filter(ep => ep.story_id === storyId)
+    const usedNumbers = new Set(storyEpisodes.map(ep => ep.episode_number))
+    let nextNum = 1
+    while (usedNumbers.has(nextNum)) {
+      nextNum++
+    }
+    return nextNum
+  }
+
+  const resetForm = () => { 
+    setFormData({ 
+      ...defaultForm, 
+      story_id: filterStoryId,
+      episode_number: String(getNextAvailableEpisodeNumber(filterStoryId))
+    }); 
+    setShowForm(false); 
+    setEditingId(null) 
+  }
+  const showMsg = (type: 'success' | 'error', text: string) => { setMessage({ type, text }); setTimeout(() => setMessage(null), 4000) }
   const generateSlug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!formData.story_id || !formData.title || !formData.slug) { showMsg('error', 'Story, title, and slug are required.'); return }
+    
+    const epNum = parseInt(formData.episode_number)
+    if (isNaN(epNum) || epNum < 1) {
+      showMsg('error', 'Episode Number must be a positive integer.')
+      return
+    }
+
+    const isDuplicateNum = episodes.some(ep => 
+      ep.story_id === formData.story_id && 
+      ep.episode_number === epNum && 
+      ep.id !== editingId
+    )
+    if (isDuplicateNum) {
+      showMsg('error', `Episode ${epNum} already exists for this story. Please choose another episode number.`)
+      return
+    }
+
+    const isDuplicateSlug = episodes.some(ep => ep.slug === formData.slug && ep.id !== editingId)
+    if (isDuplicateSlug) {
+      showMsg('error', 'This episode URL (slug) already exists. Please modify the slug.')
+      return
+    }
+
     setLoading(true)
     const fd = new FormData()
     Object.entries(formData).forEach(([k, v]) => fd.append(k, v))
@@ -76,7 +118,12 @@ export default function EpisodesClient({ initialEpisodes, stories }: { initialEp
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Episodes</h1>
-        <button onClick={() => { resetForm(); setShowForm(true) }} className="inline-flex items-center px-4 py-2 bg-[#f55139] text-white text-sm font-medium rounded-lg hover:bg-[#e0452d]"><Plus className="w-4 h-4 mr-2" /> Add Episode</button>
+        <button onClick={() => { 
+          const nextNum = getNextAvailableEpisodeNumber(filterStoryId);
+          setFormData({ ...defaultForm, story_id: filterStoryId, episode_number: String(nextNum) }); 
+          setShowForm(true); 
+          setEditingId(null) 
+        }} className="inline-flex items-center px-4 py-2 bg-[#f55139] text-white text-sm font-medium rounded-lg hover:bg-[#e0452d]"><Plus className="w-4 h-4 mr-2" /> Add Episode</button>
       </div>
       {message && <div className={`mb-4 p-3 rounded-lg text-sm ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>{message.text}</div>}
 
@@ -93,7 +140,7 @@ export default function EpisodesClient({ initialEpisodes, stories }: { initialEp
           <h2 className="text-lg font-semibold mb-4">{editingId ? 'Edit Episode' : 'Add Episode'}</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div><label className="block text-sm font-medium text-gray-700 mb-1">Story *</label><select value={formData.story_id} onChange={e => setFormData(p => ({ ...p, story_id: e.target.value }))} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#f55139]" required><option value="">Select Story</option>{stories.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}</select></div>
+              <div><label className="block text-sm font-medium text-gray-700 mb-1">Story *</label><select value={formData.story_id} onChange={e => setFormData(p => ({ ...p, story_id: e.target.value, episode_number: String(getNextAvailableEpisodeNumber(e.target.value)) }))} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#f55139]" required><option value="">Select Story</option>{stories.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}</select></div>
               <div><label className="block text-sm font-medium text-gray-700 mb-1">Episode Number *</label><input type="number" min="1" value={formData.episode_number} onChange={e => setFormData(p => ({ ...p, episode_number: e.target.value }))} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#f55139]" required /></div>
               <div><label className="block text-sm font-medium text-gray-700 mb-1">Status</label><select value={formData.status} onChange={e => setFormData(p => ({ ...p, status: e.target.value }))} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#f55139]"><option value="draft">Draft</option><option value="published">Published</option></select></div>
             </div>

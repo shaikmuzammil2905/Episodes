@@ -64,7 +64,18 @@ export async function createEpisode(formData: FormData) {
     }])
     .select()
 
-  if (error) return { error: error.message }
+  if (error) {
+    if (error.code === '23505') {
+      if (error.message.includes('episode_number')) {
+        return { error: `Episode ${episode_number} already exists for this story. Please choose another episode number.` }
+      }
+      if (error.message.includes('slug')) {
+        return { error: 'This episode URL (slug) already exists for this story. Please choose another slug.' }
+      }
+      return { error: 'A duplicate record already exists.' }
+    }
+    return { error: error.message }
+  }
 
   revalidatePath('/admin/episodes')
   revalidatePath('/admin/stories')
@@ -112,7 +123,18 @@ export async function updateEpisode(id: string, formData: FormData) {
     .eq('id', id)
     .select()
 
-  if (error) return { error: error.message }
+  if (error) {
+    if (error.code === '23505') {
+      if (error.message.includes('episode_number')) {
+        return { error: `Episode ${episode_number} already exists for this story. Please choose another episode number.` }
+      }
+      if (error.message.includes('slug')) {
+        return { error: 'This episode URL (slug) already exists for this story. Please choose another slug.' }
+      }
+      return { error: 'A duplicate record already exists.' }
+    }
+    return { error: error.message }
+  }
 
   revalidatePath('/admin/episodes')
   revalidatePath('/admin/stories')
