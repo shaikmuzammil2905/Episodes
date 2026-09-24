@@ -18,7 +18,7 @@ export default async function HomePage() {
     console.error('Failed to fetch from database, using fallback data:', error)
     stories = FALLBACK_STORIES
     genres = FALLBACK_GENRES
-    languages = [{ id: '1', name: 'English', code: 'en' }, { id: '2', name: 'Telugu', code: 'te' }]
+    languages = [{ id: '1', name: 'English', code: 'en' }, { id: '2', name: 'Telugu', code: 'te' }, { id: '3', name: 'Hindi', code: 'hi' }]
     categories = [{ id: '1', name: 'Novels', slug: 'novels' }]
   }
 
@@ -31,14 +31,19 @@ export default async function HomePage() {
     genres = FALLBACK_GENRES
   }
 
-  const languageNames = ['All Languages', ...languages.map(l => l.name)]
+  let languageNames = ['All Languages', ...languages.map(l => l.name)]
+  
+  // Ensure Hindi is always visible for testing translations
+  if (!languageNames.includes('Hindi')) {
+    languageNames.push('Hindi')
+  }
   const categoryNames = categories.map(c => c.name)
 
   return (
     <HomePageClient
       stories={stories}
       genres={genres}
-      languageNames={languageNames.length > 1 ? languageNames : ['All Languages', 'English', 'Telugu']}
+      languageNames={languageNames.length > 1 ? languageNames : ['All Languages', 'English', 'Telugu', 'Hindi']}
       categoryNames={categoryNames.length > 0 ? categoryNames : ['Novels', 'Long Stories', 'Short Stories', 'Fun Stories']}
     />
   )
