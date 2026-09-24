@@ -18,6 +18,24 @@ export default function HomePageClient({ stories, genres, languageNames, categor
   const [selectedCategory, setSelectedCategory] = useState<string>(categoryNames[0] || 'Novels');
   const [selectedLanguage, setSelectedLanguage] = useState<string>('All Languages');
 
+  // Simple translations for Telugu
+  const t = (text: string) => {
+    if (selectedLanguage.toLowerCase() === 'telugu') {
+      switch (text) {
+        case 'Language': return 'భాష';
+        case 'Popular Novels': return 'ప్రసిద్ధ నవలలు';
+        case 'Trending Stories': return 'ట్రెండింగ్ కథలు';
+        case 'Latest Novel Chapters & Stories': return 'తాజా నవల అధ్యాయాలు & కథలు';
+        case 'Discover by Genre': return 'కథా రకాలు';
+        case 'No popular stories found for this filter.': return 'ఈ ఫిల్టర్ కోసం ప్రసిద్ధ కథలు కనుగొనబడలేదు.';
+        case 'No trending stories found for this filter.': return 'ఈ ఫిల్టర్ కోసం ట్రెండింగ్ కథలు కనుగొనబడలేదు.';
+        case 'No latest stories found for this filter.': return 'ఈ ఫిల్టర్ కోసం తాజా కథలు కనుగొనబడలేదు.';
+        default: return text;
+      }
+    }
+    return text;
+  };
+
   // Filter logic
   const filteredStories = useMemo(() => {
     let result = stories;
@@ -85,7 +103,7 @@ export default function HomePageClient({ stories, genres, languageNames, categor
       <section className="language-filter-section">
         <div className="container">
           <div className="language-filter-wrapper">
-            <label className="language-label" htmlFor="language-select">Language</label>
+            <label className="language-label" htmlFor="language-select">{t('Language')}</label>
             <div className="select-wrapper">
               <select 
                 id="language-select" 
@@ -106,7 +124,7 @@ export default function HomePageClient({ stories, genres, languageNames, categor
       <section className="section bg-main pt-0">
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">Popular Novels</h2>
+            <h2 className="section-title">{t('Popular Novels')}</h2>
           </div>
           {popularStories.length > 0 ? (
             <div className="stories-grid">
@@ -115,7 +133,7 @@ export default function HomePageClient({ stories, genres, languageNames, categor
               ))}
             </div>
           ) : (
-            <div className="empty-state">No popular stories found for this filter.</div>
+            <div className="empty-state">{t('No popular stories found for this filter.')}</div>
           )}
         </div>
       </section>
@@ -124,7 +142,7 @@ export default function HomePageClient({ stories, genres, languageNames, categor
       <section className="section bg-main">
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">Trending Stories</h2>
+            <h2 className="section-title">{t('Trending Stories')}</h2>
           </div>
           {trendingStories.length > 0 ? (
             <div className="stories-grid">
@@ -133,7 +151,7 @@ export default function HomePageClient({ stories, genres, languageNames, categor
               ))}
             </div>
           ) : (
-            <div className="empty-state">No trending stories found for this filter.</div>
+            <div className="empty-state">{t('No trending stories found for this filter.')}</div>
           )}
         </div>
       </section>
@@ -142,7 +160,7 @@ export default function HomePageClient({ stories, genres, languageNames, categor
       <section className="section bg-main">
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">Latest Novel Chapters & Stories</h2>
+            <h2 className="section-title">{t('Latest Novel Chapters & Stories')}</h2>
           </div>
           {latestStories.length > 0 ? (
             <div className="stories-grid">
@@ -151,7 +169,7 @@ export default function HomePageClient({ stories, genres, languageNames, categor
               ))}
             </div>
           ) : (
-            <div className="empty-state">No latest stories found for this filter.</div>
+            <div className="empty-state">{t('No latest stories found for this filter.')}</div>
           )}
         </div>
       </section>
@@ -160,7 +178,7 @@ export default function HomePageClient({ stories, genres, languageNames, categor
       <section id="genres" className="section genres-section bg-cream">
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">Discover by Genre</h2>
+            <h2 className="section-title">{t('Discover by Genre')}</h2>
           </div>
           <div className="genre-chips-container">
             {genres.map((genre) => (
