@@ -1,25 +1,28 @@
 import React from 'react';
 import { getPublicAuthors, getPublicStories } from '@/lib/supabase/queries';
-import { AUTHORS, STORIES } from '@/lib/data';
 import AuthorsPageClient from './AuthorsPageClient';
+import type { Metadata } from 'next';
 
 export const revalidate = 60;
 
+export const metadata: Metadata = {
+  title: 'Authors & Storytellers | StoryEpisodes',
+  description: 'Meet the creative minds behind our stories and discover works by your favorite authors.',
+};
+
 export default async function AuthorsPage() {
-  let authors = [];
-  let stories = [];
+  let authors: import('@/lib/types').Author[] = [];
+  let stories: import('@/lib/types').Story[] = [];
 
   try {
     const [dbAuthors, dbStories] = await Promise.all([
       getPublicAuthors(),
       getPublicStories(),
     ]);
-    authors = dbAuthors && dbAuthors.length > 0 ? dbAuthors : AUTHORS;
-    stories = dbStories && dbStories.length > 0 ? dbStories : STORIES;
+    authors = dbAuthors || [];
+    stories = dbStories || [];
   } catch (err) {
     console.error('Failed to fetch authors from Supabase:', err);
-    authors = AUTHORS;
-    stories = STORIES;
   }
 
   return <AuthorsPageClient authors={authors} stories={stories} />;

@@ -2,15 +2,25 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { searchStories } from '@/lib/data';
 import { useModal } from '@/context/ModalContext';
+import type { Story } from '@/lib/types';
+import { matchesSearch } from '@/lib/normalization';
+import { searchStories } from '@/lib/data';
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  stories?: Story[];
+}
+
+export default function HeroSection({ stories = [] }: HeroSectionProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showResults, setShowResults] = useState(false);
   const { openStoryModal } = useModal();
 
-  const results = searchQuery.trim() ? searchStories(searchQuery).slice(0, 5) : [];
+  const results = searchQuery.trim()
+    ? (stories.length > 0
+        ? stories.filter(s => matchesSearch(s, searchQuery)).slice(0, 6)
+        : searchStories(searchQuery).slice(0, 6))
+    : [];
 
   return (
     <section className="hero-section">
@@ -24,12 +34,10 @@ export default function HeroSection() {
       <div className="container hero-content">
         <div className="hero-text-wrapper">
           <h1 className="hero-headline">
-            Discover Amazing Stories,
-            <br />
-            <span className="hero-highlight">One Episode at a Time</span>
+            Discover Stories. Read. Enjoy.
           </h1>
           <p className="hero-sub">
-            Explore captivating stories, discover new worlds, and keep coming back for the next episode.
+            Explore original novels, long stories, short stories and fun stories—all in one place. Discover Captivating Stories, One Episode at a Time.
           </p>
 
           {/* Search Bar */}
@@ -41,7 +49,7 @@ export default function HeroSection() {
               </svg>
               <input
                 type="text"
-                placeholder="Search stories, authors, genres..."
+                placeholder="Search stories, novels, authors, Telugu..."
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setShowResults(true); }}
                 onFocus={() => setShowResults(true)}
@@ -64,7 +72,7 @@ export default function HeroSection() {
                     }}
                   >
                     <div className="sr-title">{s.title}</div>
-                    <div className="sr-meta">{s.genre} • {s.author}</div>
+                    <div className="sr-meta">{s.genre} • {s.author} ({s.language})</div>
                   </button>
                 ))}
               </div>
@@ -78,8 +86,8 @@ export default function HeroSection() {
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </Link>
-            <Link href="/#genres" className="btn-secondary hero-cta">
-              Browse Genres
+            <Link href="/novels" className="btn-secondary hero-cta">
+              Browse Novels
             </Link>
           </div>
         </div>

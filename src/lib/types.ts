@@ -21,7 +21,10 @@ export interface Story {
   genreId: string;
   categoryName?: string;
   categorySlug?: string;
+  categoryId?: string;
   language: 'English' | 'Telugu' | 'Short Story' | string;
+  languageCode?: string;
+  languageId?: string;
   coverImage: string;
   heroImage?: string;
   shortDescription: string;
@@ -32,6 +35,8 @@ export interface Story {
   readingTime?: string;
   whyRead: string;
   featured?: boolean;
+  popular?: boolean;
+  trending?: boolean;
   recommended?: boolean;
   latest?: boolean;
   episodes: Episode[];

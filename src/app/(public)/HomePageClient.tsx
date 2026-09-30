@@ -6,6 +6,14 @@ import HeroSection from '@/components/HeroSection';
 import StoryCard from '@/components/StoryCard';
 import { useModal } from '@/context/ModalContext';
 import type { Story, Genre } from '@/lib/types';
+import {
+  isNovel,
+  isLongStory,
+  isShortStory,
+  isFunStory,
+  isComedyStory,
+  matchesLanguage,
+} from '@/lib/normalization';
 
 interface HomePageClientProps {
   stories: Story[];
@@ -23,26 +31,41 @@ export default function HomePageClient({ stories, genres, languageNames, categor
   const t = (text: string) => {
     const lang = selectedLanguage.toLowerCase();
     
-    if (lang === 'telugu') {
+    if (lang === 'telugu' || lang === 'te') {
       switch (text) {
         case 'Language': return 'భాష';
-        case 'Popular Novels': return 'ప్రసిద్ధ నవలలు';
+        case 'Popular Stories': return 'ప్రసిద్ధ కథలు';
         case 'Trending Stories': return 'ట్రెండింగ్ కథలు';
-        case 'Latest Novel Chapters & Stories': return 'తాజా నవల అధ్యాయాలు & కథలు';
+        case 'Latest Stories': return 'తాజా కథలు';
+        case 'Long Stories': return 'పెద్ద కథలు';
+        case 'Short Stories': return 'చిన్న కథలు';
+        case 'Novels': return 'నవలలు';
+        case 'Fun Stories': return 'వినోద కథలు';
+        case 'Comedy Stories': return 'హాస్య కథలు';
         case 'Discover by Genre': return 'కథా రకాలు';
         case 'No popular stories found for this filter.': return 'ఈ ఫిల్టర్ కోసం ప్రసిద్ధ కథలు కనుగొనబడలేదు.';
         case 'No trending stories found for this filter.': return 'ఈ ఫిల్టర్ కోసం ట్రెండింగ్ కథలు కనుగొనబడలేదు.';
         case 'No latest stories found for this filter.': return 'ఈ ఫిల్టర్ కోసం తాజా కథలు కనుగొనబడలేదు.';
+        case 'No long stories found for this filter.': return 'ఈ ఫిల్టర్ కోసం పెద్ద కథలు కనుగొనబడలేదు.';
+        case 'No short stories found for this filter.': return 'ఈ ఫిల్టర్ కోసం చిన్న కథలు కనుగొనబడలేదు.';
+        case 'No novels found for this filter.': return 'ఈ ఫిల్టర్ కోసం నవలలు కనుగొనబడలేదు.';
+        case 'No fun stories found for this filter.': return 'ఈ ఫిల్టర్ కోసం వినోద కథలు కనుగొనబడలేదు.';
+        case 'No comedy stories found for this filter.': return 'ఈ ఫిల్టర్ కోసం హాస్య కథలు కనుగొనబడలేదు.';
         default: return text;
       }
     }
     
-    if (lang === 'hindi') {
+    if (lang === 'hindi' || lang === 'hi') {
       switch (text) {
         case 'Language': return 'भाषा';
-        case 'Popular Novels': return 'लोकप्रिय उपन्यास';
+        case 'Popular Stories': return 'लोकप्रिय कहानियाँ';
         case 'Trending Stories': return 'ट्रेंडिंग कहानियाँ';
-        case 'Latest Novel Chapters & Stories': return 'नवीनतम उपन्यास अध्याय और कहानियाँ';
+        case 'Latest Stories': return 'नवीनतम कहानियाँ';
+        case 'Long Stories': return 'लंबी कहानियाँ';
+        case 'Short Stories': return 'लघु कहानियाँ';
+        case 'Novels': return 'उपन्यास';
+        case 'Fun Stories': return 'रोचक कहानियाँ';
+        case 'Comedy Stories': return 'हास्य कहानियाँ';
         case 'Discover by Genre': return 'शैली के अनुसार खोजें';
         case 'No popular stories found for this filter.': return 'इस फ़िल्टर के लिए कोई लोकप्रिय कहानियाँ नहीं मिलीं।';
         case 'No trending stories found for this filter.': return 'इस फ़िल्टर के लिए कोई ट्रेंडिंग कहानियाँ नहीं मिलीं।';
@@ -58,29 +81,29 @@ export default function HomePageClient({ stories, genres, languageNames, categor
   const filteredStories = useMemo(() => {
     let result = stories;
     if (selectedLanguage && selectedLanguage !== 'All Languages') {
-      result = result.filter(s => s.language?.toLowerCase() === selectedLanguage.toLowerCase());
+      result = result.filter(
+        s =>
+          matchesLanguage(s.language, selectedLanguage) ||
+          (s.languageCode && matchesLanguage(s.languageCode, selectedLanguage))
+      );
     }
     return result;
   }, [selectedLanguage, stories]);
 
   const popularStories = filteredStories.filter(s => s.featured);
-  const trendingStories = filteredStories.filter(s => s.recommended);
+  const trendingStories = filteredStories.filter(s => s.recommended || s.trending);
   const latestStories = [...filteredStories].reverse().slice(0, 8);
 
-  const longStories = filteredStories.filter(s => s.categorySlug === 'long-story' || s.categorySlug === 'long-stories' || s.categorySlug === 'long');
-  const shortStories = filteredStories.filter(s => s.categorySlug === 'short-story' || s.categorySlug === 'short-stories' || s.categorySlug === 'short');
-  const novels = filteredStories.filter(s => s.categorySlug === 'novel' || s.categorySlug === 'novels');
-  const funStories = filteredStories.filter(s => s.categorySlug === 'fun-story' || s.categorySlug === 'fun-stories' || s.categorySlug === 'fun');
-  const comedyStories = filteredStories.filter(s => s.categorySlug === 'comedy-story' || s.categorySlug === 'comedy-stories' || s.categorySlug === 'comedy');
-
-
+  const longStories = filteredStories.filter(isLongStory);
+  const shortStories = filteredStories.filter(isShortStory);
+  const novels = filteredStories.filter(isNovel);
+  const funStories = filteredStories.filter(isFunStory);
+  const comedyStories = filteredStories.filter(isComedyStory);
 
   return (
     <>
-
-
       {/* ──── HERO & SEARCH ──── */}
-      <HeroSection />
+      <HeroSection stories={stories} />
 
       {/* ──── LANGUAGE FILTER ──── */}
       <section className="language-filter-section">

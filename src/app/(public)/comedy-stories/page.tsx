@@ -1,10 +1,24 @@
 import React, { Suspense } from 'react';
 import { getPublicStories, getPublicGenres } from '@/lib/supabase/queries';
+import { isComedyStory } from '@/lib/normalization';
 import StoriesContent from '../stories/StoriesContent';
+import type { Metadata } from 'next';
 
 export const revalidate = 60;
 
-export default async function ComedyStoriesPage() {
+export const metadata: Metadata = {
+  title: 'Comedy Stories | Laugh Out Loud Reads | StoryEpisodes',
+  description: 'Laugh out loud with our collection of comedy stories and humorous tales.',
+};
+
+export default async function ComedyStoriesPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ lang?: string; language?: string; q?: string; search?: string }>;
+}) {
+  const params = searchParams ? await searchParams : {};
+  const requestedLang = params.lang || params.language;
+
   let stories: import('@/lib/types').Story[] = [];
   let genres: import('@/lib/types').Genre[] = [];
 
@@ -15,15 +29,22 @@ export default async function ComedyStoriesPage() {
     ]);
     
     genres = dbGenres || [];
-    // Filter for comedy stories
-    stories = (dbStories || []).filter(s => s.categorySlug === 'comedy-story' || s.categorySlug === 'comedy-stories' || s.categorySlug === 'comedy');
+    // Filter for comedy stories using canonical normalization
+    stories = (dbStories || []).filter(isComedyStory);
   } catch (err) {
-    console.error('Failed to fetch stories from Supabase:', err);
+    console.error('Failed to fetch comedy stories from Supabase:', err);
   }
 
   return (
-    <Suspense fallback={<div>Loading stories...</div>}>
-      <StoriesContent initialStories={stories} initialGenres={genres} forceDbData={true} title="Comedy Stories" description="Laugh out loud with our collection of comedy stories." />
+    <Suspense fallback={<div className="loading-state">Loading stories...</div>}>
+      <StoriesContent
+        initialStories={stories}
+        initialGenres={genres}
+        forceDbData={true}
+        title="Comedy Stories"
+        description="Laugh out loud with our collection of comedy stories."
+        initialLanguage={requestedLang}
+      />
     </Suspense>
   );
 }

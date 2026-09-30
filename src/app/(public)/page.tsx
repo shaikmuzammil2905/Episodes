@@ -1,50 +1,61 @@
 import { getPublicStories, getPublicLanguages, getPublicCategories, getPublicGenres } from '@/lib/supabase/queries'
-import { STORIES as FALLBACK_STORIES, GENRES as FALLBACK_GENRES } from '@/lib/data'
 import HomePageClient from './HomePageClient'
+import type { Metadata } from 'next'
 
 export const revalidate = 60 // Revalidate every 60 seconds
 
+export const metadata: Metadata = {
+  title: "Read Engaging Stories, Novels & Short Stories Online | Discover New Stories.",
+  description: "Discover engaging novels, short stories, long stories and fun stories. Read original stories, explore new genres and enjoy fresh storytelling online.",
+  openGraph: {
+    title: "Read Engaging Stories, Novels & Short Stories Online | Discover New Stories.",
+    description: "Discover engaging novels, short stories, long stories and fun stories. Read original stories, explore new genres and enjoy fresh storytelling online.",
+  },
+}
+
 export default async function HomePage() {
-  let stories, languages, categories, genres
+  let stories: import('@/lib/types').Story[] = []
+  let languages: { id: string; name: string; code: string }[] = []
+  let categories: { id: string; name: string; slug: string }[] = []
+  let genres: import('@/lib/types').Genre[] = []
   
   try {
-    [stories, languages, categories, genres] = await Promise.all([
+    const [dbStories, dbLanguages, dbCategories, dbGenres] = await Promise.all([
       getPublicStories(),
       getPublicLanguages(),
       getPublicCategories(),
       getPublicGenres(),
     ])
+    stories = dbStories || []
+    languages = dbLanguages || []
+    categories = dbCategories || []
+    genres = dbGenres || []
   } catch (error) {
-    console.error('Failed to fetch from database, using fallback data:', error)
-    stories = FALLBACK_STORIES
-    genres = FALLBACK_GENRES
-    languages = [{ id: '1', name: 'English', code: 'en' }, { id: '2', name: 'Telugu', code: 'te' }, { id: '3', name: 'Hindi', code: 'hi' }]
-    categories = [{ id: '1', name: 'Novels', slug: 'novels' }]
+    console.error('Failed to fetch from Supabase database:', error)
   }
 
-  // If no stories from DB yet, use fallback
-  if (!stories || stories.length === 0) {
-    stories = FALLBACK_STORIES
-  }
+  // Build language list from real languages, ensuring Telugu and English are available
+  const langSet = new Set<string>(['All Languages', 'English', 'Telugu'])
+  languages.forEach(l => {
+    if (l.name) langSet.add(l.name)
+  })
+  stories.forEach(s => {
+    if (s.language) langSet.add(s.language)
+  })
+  const languageNames = Array.from(langSet)
 
-  if (!genres || genres.length === 0) {
-    genres = FALLBACK_GENRES
-  }
-
-  let languageNames = ['All Languages', ...languages.map(l => l.name)]
-  
-  // Ensure Hindi is always visible for testing translations
-  if (!languageNames.includes('Hindi')) {
-    languageNames.push('Hindi')
-  }
-  const categoryNames = categories.map(c => c.name)
+  const catSet = new Set<string>(['Novels', 'Long Stories', 'Short Stories', 'Fun Stories', 'Comedy Stories'])
+  categories.forEach(c => {
+    if (c.name) catSet.add(c.name)
+  })
+  const categoryNames = Array.from(catSet)
 
   return (
     <HomePageClient
       stories={stories}
       genres={genres}
-      languageNames={languageNames.length > 1 ? languageNames : ['All Languages', 'English', 'Telugu', 'Hindi']}
-      categoryNames={categoryNames.length > 0 ? categoryNames : ['Novels', 'Long Stories', 'Short Stories', 'Fun Stories']}
+      languageNames={languageNames}
+      categoryNames={categoryNames}
     />
   )
 }

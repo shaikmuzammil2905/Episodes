@@ -1,16 +1,43 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useModal } from '@/context/ModalContext';
-import { getStoriesByGenre } from '@/lib/data';
+import { Story } from '@/lib/types';
+import { isTelugu } from '@/lib/normalization';
 
 export default function GenreModal() {
   const { selectedGenre, isGenreModalOpen, closeGenreModal, openStoryModal } = useModal();
+  const [genreStories, setGenreStories] = useState<Story[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!selectedGenre) return;
+    let isMounted = true;
+    setLoading(true);
+    fetch('/api/public-stories')
+      .then(res => res.json())
+      .then((data: Story[]) => {
+        if (isMounted && Array.isArray(data)) {
+          const gSlug = selectedGenre.slug.toLowerCase();
+          const filtered = data.filter((s: Story) => {
+            if (gSlug === 'telugu' && isTelugu(s)) return true;
+            return s.genreId?.toLowerCase() === gSlug || s.genre?.toLowerCase() === selectedGenre.name.toLowerCase();
+          });
+          setGenreStories(filtered);
+        }
+      })
+      .catch(err => console.error('Failed to load genre stories:', err))
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedGenre]);
 
   if (!isGenreModalOpen || !selectedGenre) return null;
-
-  const genreStories = getStoriesByGenre(selectedGenre.slug);
 
   const getEmoji = (iconName: string) => {
     switch (iconName) {

@@ -1,5 +1,6 @@
 import { createPublicClient } from '@/lib/supabase/server'
 import type { Story, Episode, Author, Genre } from '@/lib/types'
+import { matchesLanguage, isStoryType, matchesSearch } from '@/lib/normalization'
 
 // Transforms DB story rows into the frontend Story type for backward compatibility
 function transformStory(row: any): Story {
@@ -12,7 +13,7 @@ function transformStory(row: any): Story {
     content: ep.content || '',
     readingTime: `${Math.max(1, Math.ceil((ep.content?.length || 0) / 1000))} min`,
     publishedAt: ep.published_at || ep.created_at,
-    image: ep.image_url || undefined,
+    image: ep.cover_url || ep.image_url || undefined,
   }))
 
   return {
@@ -21,16 +22,19 @@ function transformStory(row: any): Story {
     title: row.title,
     author: row.author?.name || 'Unknown Author',
     authorId: row.author?.id || '',
-    authorAvatar: row.author?.image_url || undefined,
+    authorAvatar: row.author?.avatar_url || row.author?.image_url || undefined,
     genre: row.story_genres?.[0]?.genres?.name || row.category?.name || 'General',
     genreId: row.story_genres?.[0]?.genres?.slug || row.category?.slug || 'general',
     categoryName: row.category?.name,
     categorySlug: row.category?.slug,
+    categoryId: row.category?.id || row.category_id,
     language: row.language?.name || 'English',
+    languageCode: row.language?.code || 'en',
+    languageId: row.language?.id || row.language_id,
     coverImage: row.cover_url || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop&q=80',
     shortDescription: row.short_synopsis || '',
     fullDescription: row.full_synopsis || row.short_synopsis || '',
-    status: row.status === 'published' ? 'Ongoing' : 'Ongoing',
+    status: 'Ongoing',
     isPremium: row.access_type === 'premium',
     tags: [],
     readingTime: episodes.length > 0 ? `${episodes.length * 5} min total` : undefined,
@@ -69,14 +73,11 @@ export async function getPublicStories(filters?: {
   if (filters?.featured) query = query.eq('featured', true)
   if (filters?.popular) query = query.eq('popular', true)
   if (filters?.trending) query = query.eq('trending', true)
-  if (filters?.search) {
-    query = query.or(`title.ilike.%${filters.search}%,short_synopsis.ilike.%${filters.search}%`)
-  }
 
   const { data, error } = await query
 
   if (error) {
-    console.error('Error fetching stories:', error)
+    console.error('Error fetching stories from Supabase:', error)
     return []
   }
 
@@ -87,17 +88,19 @@ export async function getPublicStories(filters?: {
     return transformStory(row)
   })
 
-  // Apply language filter after fetch (since we need the language name)
+  // Apply language filter (case-insensitive and code-aware)
   if (filters?.language && filters.language !== 'All Languages') {
-    stories = stories.filter(s => s.language === filters.language)
+    stories = stories.filter(s => matchesLanguage(s.language, filters.language) || (s.languageCode && matchesLanguage(s.languageCode, filters.language)))
   }
 
-  // Apply category filter
-  if (filters?.category) {
-    stories = stories.filter(s => {
-      const row = data?.find(d => d.id === s.id)
-      return row?.category?.name === filters.category
-    })
+  // Apply category filter (normalized slug and name aware)
+  if (filters?.category && filters.category !== 'All Categories') {
+    stories = stories.filter(s => isStoryType(s, filters.category!))
+  }
+
+  // Apply search query (matches title, author, category, genre, language, synopsis)
+  if (filters?.search && filters.search.trim()) {
+    stories = stories.filter(s => matchesSearch(s, filters.search!))
   }
 
   return stories

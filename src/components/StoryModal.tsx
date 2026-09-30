@@ -1,15 +1,33 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Episode } from '@/lib/types';
+import { Episode, Story } from '@/lib/types';
 import { useModal } from '@/context/ModalContext';
 import { getRelatedStories } from '@/lib/data';
 import StoryCard from './StoryCard';
 
 export default function StoryModal() {
   const { activeStory, closeStoryModal } = useModal();
+  const [liveRelated, setLiveRelated] = useState<Story[]>([]);
+
+  useEffect(() => {
+    if (!activeStory) return;
+    let isMounted = true;
+    fetch('/api/public-stories')
+      .then(res => res.json())
+      .then((data: Story[]) => {
+        if (isMounted && Array.isArray(data)) {
+          const related = data
+            .filter(s => s.id !== activeStory.id && (s.genreId === activeStory.genreId || s.language === activeStory.language || s.categorySlug === activeStory.categorySlug))
+            .slice(0, 3);
+          setLiveRelated(related);
+        }
+      })
+      .catch(() => {});
+    return () => { isMounted = false; };
+  }, [activeStory]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -24,7 +42,7 @@ export default function StoryModal() {
   if (!activeStory) return null;
 
   const episodes = activeStory.episodes || [];
-  const relatedStories = getRelatedStories(activeStory.id, 2);
+  const relatedStories = liveRelated.length > 0 ? liveRelated : getRelatedStories(activeStory.id, 2);
   const firstEpisode = episodes[0];
 
   return (
