@@ -16,11 +16,7 @@ export default async function NovelsPage() {
     
     genres = dbGenres || [];
     // Filter for novels
-    stories = (dbStories || []).filter(s => 
-      s.genre?.toLowerCase() === 'novels' || 
-      s.genreId?.toLowerCase() === 'novels' ||
-      s.genre?.toLowerCase() === 'novel'
-    );
+    stories = (dbStories || []).filter(s => s.categorySlug === 'novel-story' || s.categorySlug === 'novel-stories' || s.categorySlug === 'novel');
   } catch (err) {
     console.error('Failed to fetch stories from Supabase:', err);
   }

@@ -24,6 +24,8 @@ function transformStory(row: any): Story {
     authorAvatar: row.author?.image_url || undefined,
     genre: row.story_genres?.[0]?.genres?.name || row.category?.name || 'General',
     genreId: row.story_genres?.[0]?.genres?.slug || row.category?.slug || 'general',
+    categoryName: row.category?.name,
+    categorySlug: row.category?.slug,
     language: row.language?.name || 'English',
     coverImage: row.cover_url || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop&q=80',
     shortDescription: row.short_synopsis || '',

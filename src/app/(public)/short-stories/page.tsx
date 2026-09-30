@@ -16,11 +16,7 @@ export default async function ShortStoriesPage() {
     
     genres = dbGenres || [];
     // Filter for short stories
-    stories = (dbStories || []).filter(s => 
-      s.genre?.toLowerCase().includes('short') || 
-      s.genreId?.toLowerCase().includes('short') ||
-      s.tags?.includes('Short Read')
-    );
+    stories = (dbStories || []).filter(s => s.categorySlug === 'short-story' || s.categorySlug === 'short-stories' || s.categorySlug === 'short');
   } catch (err) {
     console.error('Failed to fetch stories from Supabase:', err);
   }

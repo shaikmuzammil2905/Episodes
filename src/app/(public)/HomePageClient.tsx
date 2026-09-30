@@ -67,11 +67,11 @@ export default function HomePageClient({ stories, genres, languageNames, categor
   const trendingStories = filteredStories.filter(s => s.recommended);
   const latestStories = [...filteredStories].reverse().slice(0, 8);
 
-  const longStories = filteredStories.filter(s => parseInt(s.readingTime || '0') > 20 || s.episodes?.length > 2 || s.genre?.toLowerCase() === 'long stories' || s.genreId?.toLowerCase() === 'long-stories');
-  const shortStories = filteredStories.filter(s => s.genre?.toLowerCase().includes('short') || s.genreId?.toLowerCase().includes('short') || s.tags?.includes('Short Read'));
-  const novels = filteredStories.filter(s => s.genre?.toLowerCase() === 'novels' || s.genreId?.toLowerCase() === 'novels' || s.genre?.toLowerCase() === 'novel');
-  const funStories = filteredStories.filter(s => s.genre?.toLowerCase() === 'fun stories' || s.genreId?.toLowerCase() === 'fun-stories' || s.tags?.includes('Fun'));
-  const comedyStories = filteredStories.filter(s => s.genre?.toLowerCase() === 'comedy stories' || s.genreId?.toLowerCase() === 'comedy-stories' || s.genre?.toLowerCase() === 'comedy' || s.genreId?.toLowerCase() === 'comedy');
+  const longStories = filteredStories.filter(s => s.categorySlug === 'long-story' || s.categorySlug === 'long-stories' || s.categorySlug === 'long');
+  const shortStories = filteredStories.filter(s => s.categorySlug === 'short-story' || s.categorySlug === 'short-stories' || s.categorySlug === 'short');
+  const novels = filteredStories.filter(s => s.categorySlug === 'novel' || s.categorySlug === 'novels');
+  const funStories = filteredStories.filter(s => s.categorySlug === 'fun-story' || s.categorySlug === 'fun-stories' || s.categorySlug === 'fun');
+  const comedyStories = filteredStories.filter(s => s.categorySlug === 'comedy-story' || s.categorySlug === 'comedy-stories' || s.categorySlug === 'comedy');
 
 
 

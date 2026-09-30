@@ -16,12 +16,7 @@ export default async function ComedyStoriesPage() {
     
     genres = dbGenres || [];
     // Filter for comedy stories
-    stories = (dbStories || []).filter(s => 
-      s.genre?.toLowerCase() === 'comedy stories' || 
-      s.genre?.toLowerCase() === 'comedy' ||
-      s.genreId?.toLowerCase() === 'comedy-stories' ||
-      s.genreId?.toLowerCase() === 'comedy'
-    );
+    stories = (dbStories || []).filter(s => s.categorySlug === 'comedy-story' || s.categorySlug === 'comedy-stories' || s.categorySlug === 'comedy');
   } catch (err) {
     console.error('Failed to fetch stories from Supabase:', err);
   }

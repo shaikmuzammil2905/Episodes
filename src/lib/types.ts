@@ -19,6 +19,8 @@ export interface Story {
   authorAvatar?: string;
   genre: string;
   genreId: string;
+  categoryName?: string;
+  categorySlug?: string;
   language: 'English' | 'Telugu' | 'Short Story' | string;
   coverImage: string;
   heroImage?: string;

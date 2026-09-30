@@ -16,11 +16,7 @@ export default async function LongStoriesPage() {
     
     genres = dbGenres || [];
     // Filter for long stories
-    stories = (dbStories || []).filter(s => 
-      parseInt(s.readingTime || '0') > 20 || s.episodes?.length > 2 || 
-      s.genre?.toLowerCase() === 'long stories' || 
-      s.genreId?.toLowerCase() === 'long-stories'
-    );
+    stories = (dbStories || []).filter(s => s.categorySlug === 'long-story' || s.categorySlug === 'long-stories' || s.categorySlug === 'long');
   } catch (err) {
     console.error('Failed to fetch stories from Supabase:', err);
   }

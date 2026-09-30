@@ -66,6 +66,7 @@ export default function StoryCard({ story }: StoryCardProps) {
             display: flex;
             flex-direction: column;
             cursor: pointer;
+            height: 100%;
             transition: transform var(--transition-fast), border-color var(--transition-fast);
           }
 

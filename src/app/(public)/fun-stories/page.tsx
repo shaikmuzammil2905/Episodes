@@ -16,11 +16,7 @@ export default async function FunStoriesPage() {
     
     genres = dbGenres || [];
     // Filter for fun stories
-    stories = (dbStories || []).filter(s => 
-      s.genre?.toLowerCase() === 'fun stories' || 
-      s.genreId?.toLowerCase() === 'fun-stories' ||
-      s.tags?.includes('Fun')
-    );
+    stories = (dbStories || []).filter(s => s.categorySlug === 'fun-story' || s.categorySlug === 'fun-stories' || s.categorySlug === 'fun');
   } catch (err) {
     console.error('Failed to fetch stories from Supabase:', err);
   }

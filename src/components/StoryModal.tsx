@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Episode } from '@/lib/types';
 import { useModal } from '@/context/ModalContext';
 import { getRelatedStories } from '@/lib/data';
+import StoryCard from './StoryCard';
 
 export default function StoryModal() {
   const { activeStory, closeStoryModal } = useModal();
@@ -96,17 +97,27 @@ export default function StoryModal() {
           {/* Story Details Sections */}
           <div className="story-body-grid">
             <div className="main-info">
-              <section className="info-block">
-                <h3>Synopsis</h3>
-                <p className="description-text">{activeStory.fullDescription}</p>
-              </section>
-
-              {activeStory.whyRead && (
-                <section className="info-block why-read-box">
-                  <h4>💡 Why Read This Story?</h4>
-                  <p>{activeStory.whyRead}</p>
+              <div className="story-details-row">
+                <section className="info-block">
+                  <h3>Synopsis</h3>
+                  <div className="description-text">
+                    {(activeStory.fullDescription || '').split(/\n+/).filter(Boolean).map((p, idx) => (
+                      <p key={idx}>{p}</p>
+                    ))}
+                  </div>
                 </section>
-              )}
+
+                {activeStory.whyRead && (
+                  <section className="info-block why-read-box">
+                    <h4>💡 Why Read This Story?</h4>
+                    <div className="description-text">
+                      {activeStory.whyRead.split(/\n+/).filter(Boolean).map((p, idx) => (
+                        <p key={idx}>{p}</p>
+                      ))}
+                    </div>
+                  </section>
+                )}
+              </div>
 
               {/* Episode List Section */}
               <section className="info-block episode-list-block">
@@ -148,28 +159,23 @@ export default function StoryModal() {
                 </div>
               </div>
 
-              {relatedStories.length > 0 && (
-                <div className="related-card">
-                  <h4>You Might Also Like</h4>
-                  <div className="related-mini-list">
-                    {relatedStories.map((rel) => (
-                      <div
-                        key={rel.id}
-                        className="related-item"
-                        onClick={() => {
-                          closeStoryModal();
-                          // trigger next story modal shortly after
-                        }}
-                      >
-                        <div className="rel-title">{rel.title}</div>
-                        <div className="rel-meta">{rel.genre} • By {rel.author}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              {/* related stories moved to bottom */}
             </div>
           </div>
+          
+          {/* Related Stories Horizontal Scroll */}
+          {relatedStories.length > 0 && (
+            <div className="related-stories-section">
+              <h3>Related Stories</h3>
+              <div className="related-scroll-container">
+                {relatedStories.map((rel) => (
+                  <div key={rel.id} className="related-card-wrapper">
+                    <StoryCard story={rel} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -349,14 +355,15 @@ export default function StoryModal() {
         }
 
         .story-body-grid {
-          display: grid;
-          grid-template-columns: 1fr;
+          display: flex;
+          flex-direction: column;
           gap: 24px;
         }
 
-        @media (min-width: 768px) {
+        @media (min-width: 1024px) {
           .story-body-grid {
-            grid-template-columns: 2fr 1fr;
+            display: grid;
+            grid-template-columns: 1fr 300px;
           }
         }
 
@@ -375,8 +382,34 @@ export default function StoryModal() {
 
         .description-text {
           font-size: 0.95rem;
-          line-height: 1.65;
+          line-height: 1.8;
           color: var(--text-secondary);
+        }
+        .description-text p {
+          margin-bottom: 1.25rem;
+        }
+        .description-text p:last-child {
+          margin-bottom: 0;
+        }
+        
+        .story-details-row {
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+          margin-bottom: 24px;
+        }
+        
+        @media (min-width: 768px) {
+          .story-details-row {
+            flex-direction: row;
+            align-items: stretch;
+          }
+          .story-details-row > .info-block {
+            flex: 1;
+            margin-bottom: 0;
+            display: flex;
+            flex-direction: column;
+          }
         }
 
         .why-read-box {
@@ -390,13 +423,7 @@ export default function StoryModal() {
           color: var(--text-gold);
           font-size: 0.95rem;
           font-weight: 700;
-          margin-bottom: 6px;
-        }
-
-        .why-read-box p {
-          font-size: 0.9rem;
-          color: var(--text-secondary);
-          line-height: 1.5;
+          margin-bottom: 12px;
         }
 
         .episodes-header {
@@ -530,6 +557,47 @@ export default function StoryModal() {
         .rel-meta {
           font-size: 0.75rem;
           color: var(--text-muted);
+        }
+        
+        .related-stories-section {
+          margin-top: 16px;
+          border-top: 1px solid var(--border-light);
+          padding-top: 24px;
+        }
+        
+        .related-stories-section h3 {
+          font-size: 1.25rem;
+          font-weight: 800;
+          margin-bottom: 16px;
+          color: var(--text-primary);
+        }
+        
+        .related-scroll-container {
+          display: flex;
+          gap: 16px;
+          overflow-x: auto;
+          scroll-snap-type: x proximity;
+          padding-bottom: 16px;
+          scrollbar-width: none;
+        }
+        
+        .related-scroll-container::-webkit-scrollbar {
+          display: none;
+        }
+        
+        .related-card-wrapper {
+          flex: 0 0 280px;
+          scroll-snap-align: start;
+        }
+        
+        .related-card-wrapper :global(.scroll-observer-wrapper) {
+          height: 100%;
+        }
+        
+        @media (max-width: 639px) {
+          .related-card-wrapper {
+            flex: 0 0 85%;
+          }
         }
 
         /* Mobile full-screen reading style sheet */
