@@ -27,7 +27,7 @@ export default async function ShortStoriesPage() {
 
   return (
     <Suspense fallback={<div>Loading stories...</div>}>
-      <StoriesContent initialStories={stories} initialGenres={genres} forceDbData={true} />
+      <StoriesContent initialStories={stories} initialGenres={genres} forceDbData={true} title="Short Stories" description="Quick reads perfect for a coffee break or commute." />
     </Suspense>
   );
 }

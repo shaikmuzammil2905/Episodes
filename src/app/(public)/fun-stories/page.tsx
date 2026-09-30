@@ -27,7 +27,7 @@ export default async function FunStoriesPage() {
 
   return (
     <Suspense fallback={<div>Loading stories...</div>}>
-      <StoriesContent initialStories={stories} initialGenres={genres} forceDbData={true} />
+      <StoriesContent initialStories={stories} initialGenres={genres} forceDbData={true} title="Fun Stories" description="Lighthearted, entertaining, and fun stories to brighten your day." />
     </Suspense>
   );
 }

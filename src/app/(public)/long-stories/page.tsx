@@ -27,7 +27,7 @@ export default async function LongStoriesPage() {
 
   return (
     <Suspense fallback={<div>Loading stories...</div>}>
-      <StoriesContent initialStories={stories} initialGenres={genres} forceDbData={true} />
+      <StoriesContent initialStories={stories} initialGenres={genres} forceDbData={true} title="Long Stories" description="Dive into our extensive collection of long stories and epic novels." />
     </Suspense>
   );
 }

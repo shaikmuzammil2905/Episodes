@@ -10,9 +10,11 @@ interface StoriesContentProps {
   initialStories?: Story[];
   initialGenres?: Genre[];
   forceDbData?: boolean;
+  title?: string;
+  description?: string;
 }
 
-export default function StoriesContent({ initialStories, initialGenres, forceDbData }: StoriesContentProps) {
+export default function StoriesContent({ initialStories, initialGenres, forceDbData, title, description }: StoriesContentProps) {
   const allStories: Story[] = forceDbData && initialStories ? initialStories : ((initialStories && initialStories.length > 0) ? initialStories : STORIES);
   const genresList: Genre[] = forceDbData && initialGenres ? initialGenres : ((initialGenres && initialGenres.length > 0) ? initialGenres : GENRES);
 
@@ -54,8 +56,8 @@ export default function StoriesContent({ initialStories, initialGenres, forceDbD
       <div className="container">
         {/* Page Header */}
         <div className="page-header">
-          <h1>All Stories</h1>
-          <p>Browse our complete library of stories. Click any story to see details and start reading.</p>
+          <h1>{title || 'All Stories'}</h1>
+          <p>{description || 'Browse our complete library of stories. Click any story to see details and start reading.'}</p>
         </div>
 
         {/* Search + Filters */}
