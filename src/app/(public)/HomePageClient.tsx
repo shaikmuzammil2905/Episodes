@@ -113,7 +113,9 @@ export default function HomePageClient({ stories, genres, languageNames, categor
             <div className="carousel-container">
               <div className="stories-carousel">
                 {popularStories.map((story) => (
-                  <StoryCard key={story.id} story={story} />
+                  <div key={story.id} className="carousel-item">
+                    <StoryCard story={story} />
+                  </div>
                 ))}
               </div>
             </div>
@@ -133,7 +135,9 @@ export default function HomePageClient({ stories, genres, languageNames, categor
             <div className="carousel-container">
               <div className="stories-carousel">
                 {trendingStories.map((story) => (
-                  <StoryCard key={story.id} story={story} />
+                  <div key={story.id} className="carousel-item">
+                    <StoryCard story={story} />
+                  </div>
                 ))}
               </div>
             </div>
@@ -153,7 +157,9 @@ export default function HomePageClient({ stories, genres, languageNames, categor
             <div className="carousel-container">
               <div className="stories-carousel">
                 {latestStories.map((story) => (
-                  <StoryCard key={story.id} story={story} />
+                  <div key={story.id} className="carousel-item">
+                    <StoryCard story={story} />
+                  </div>
                 ))}
               </div>
             </div>
@@ -174,7 +180,9 @@ export default function HomePageClient({ stories, genres, languageNames, categor
             <div className="carousel-container">
               <div className="stories-carousel">
                 {longStories.map((story) => (
-                  <StoryCard key={story.id} story={story} />
+                  <div key={story.id} className="carousel-item">
+                    <StoryCard story={story} />
+                  </div>
                 ))}
               </div>
             </div>
@@ -195,7 +203,9 @@ export default function HomePageClient({ stories, genres, languageNames, categor
             <div className="carousel-container">
               <div className="stories-carousel">
                 {shortStories.map((story) => (
-                  <StoryCard key={story.id} story={story} />
+                  <div key={story.id} className="carousel-item">
+                    <StoryCard story={story} />
+                  </div>
                 ))}
               </div>
             </div>
@@ -216,7 +226,9 @@ export default function HomePageClient({ stories, genres, languageNames, categor
             <div className="carousel-container">
               <div className="stories-carousel">
                 {novels.map((story) => (
-                  <StoryCard key={story.id} story={story} />
+                  <div key={story.id} className="carousel-item">
+                    <StoryCard story={story} />
+                  </div>
                 ))}
               </div>
             </div>
@@ -237,7 +249,9 @@ export default function HomePageClient({ stories, genres, languageNames, categor
             <div className="carousel-container">
               <div className="stories-carousel">
                 {funStories.map((story) => (
-                  <StoryCard key={story.id} story={story} />
+                  <div key={story.id} className="carousel-item">
+                    <StoryCard story={story} />
+                  </div>
                 ))}
               </div>
             </div>
@@ -258,7 +272,9 @@ export default function HomePageClient({ stories, genres, languageNames, categor
             <div className="carousel-container">
               <div className="stories-carousel">
                 {comedyStories.map((story) => (
-                  <StoryCard key={story.id} story={story} />
+                  <div key={story.id} className="carousel-item">
+                    <StoryCard story={story} />
+                  </div>
                 ))}
               </div>
             </div>
@@ -449,13 +465,18 @@ export default function HomePageClient({ stories, genres, languageNames, categor
           scrollbar-width: thin;
         }
 
-        .stories-carousel > * {
+        .carousel-item {
           flex: 0 0 280px;
           scroll-snap-align: start;
+          height: 100%;
+        }
+        
+        .carousel-item :global(.scroll-observer-wrapper) {
+          height: 100%;
         }
 
         @media (min-width: 640px) {
-          .stories-carousel > * {
+          .carousel-item {
             flex: 0 0 300px;
           }
         }
