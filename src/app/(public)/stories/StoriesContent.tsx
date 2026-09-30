@@ -9,11 +9,12 @@ import { STORIES, GENRES } from '@/lib/data';
 interface StoriesContentProps {
   initialStories?: Story[];
   initialGenres?: Genre[];
+  forceDbData?: boolean;
 }
 
-export default function StoriesContent({ initialStories, initialGenres }: StoriesContentProps) {
-  const allStories: Story[] = (initialStories && initialStories.length > 0) ? initialStories : STORIES;
-  const genresList: Genre[] = (initialGenres && initialGenres.length > 0) ? initialGenres : GENRES;
+export default function StoriesContent({ initialStories, initialGenres, forceDbData }: StoriesContentProps) {
+  const allStories: Story[] = forceDbData && initialStories ? initialStories : ((initialStories && initialStories.length > 0) ? initialStories : STORIES);
+  const genresList: Genre[] = forceDbData && initialGenres ? initialGenres : ((initialGenres && initialGenres.length > 0) ? initialGenres : GENRES);
 
   const searchParams = useSearchParams();
   const genreParam = searchParams.get('genre') || '';

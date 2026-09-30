@@ -1,0 +1,33 @@
+import React, { Suspense } from 'react';
+import { getPublicStories, getPublicGenres } from '@/lib/supabase/queries';
+import StoriesContent from '../stories/StoriesContent';
+
+export const revalidate = 60;
+
+export default async function LongStoriesPage() {
+  let stories: import('@/lib/types').Story[] = [];
+  let genres: import('@/lib/types').Genre[] = [];
+
+  try {
+    const [dbStories, dbGenres] = await Promise.all([
+      getPublicStories(),
+      getPublicGenres(),
+    ]);
+    
+    genres = dbGenres || [];
+    // Filter for long stories
+    stories = (dbStories || []).filter(s => 
+      parseInt(s.readingTime || '0') > 20 || s.episodes?.length > 2 || 
+      s.genre?.toLowerCase() === 'long stories' || 
+      s.genreId?.toLowerCase() === 'long-stories'
+    );
+  } catch (err) {
+    console.error('Failed to fetch stories from Supabase:', err);
+  }
+
+  return (
+    <Suspense fallback={<div>Loading stories...</div>}>
+      <StoriesContent initialStories={stories} initialGenres={genres} forceDbData={true} />
+    </Suspense>
+  );
+}

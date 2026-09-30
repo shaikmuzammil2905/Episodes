@@ -81,6 +81,11 @@ export async function createEpisode(formData: FormData) {
   revalidatePath('/admin/stories')
   revalidatePath('/', 'layout')
   revalidatePath('/stories')
+  revalidatePath('/long-stories')
+  revalidatePath('/short-stories')
+  revalidatePath('/novels')
+  revalidatePath('/fun-stories')
+  revalidatePath('/comedy-stories')
 
   return { data }
 }
@@ -140,6 +145,11 @@ export async function updateEpisode(id: string, formData: FormData) {
   revalidatePath('/admin/stories')
   revalidatePath('/', 'layout')
   revalidatePath('/stories')
+  revalidatePath('/long-stories')
+  revalidatePath('/short-stories')
+  revalidatePath('/novels')
+  revalidatePath('/fun-stories')
+  revalidatePath('/comedy-stories')
 
   return { data }
 }
@@ -155,6 +165,11 @@ export async function deleteEpisode(id: string) {
   revalidatePath('/admin/stories')
   revalidatePath('/', 'layout')
   revalidatePath('/stories')
+  revalidatePath('/long-stories')
+  revalidatePath('/short-stories')
+  revalidatePath('/novels')
+  revalidatePath('/fun-stories')
+  revalidatePath('/comedy-stories')
 
   return { success: true }
 }
@@ -181,6 +196,11 @@ export async function toggleEpisodeStatus(id: string, currentStatus: string) {
   revalidatePath('/admin/stories')
   revalidatePath('/', 'layout')
   revalidatePath('/stories')
+  revalidatePath('/long-stories')
+  revalidatePath('/short-stories')
+  revalidatePath('/novels')
+  revalidatePath('/fun-stories')
+  revalidatePath('/comedy-stories')
 
   return { data }
 }

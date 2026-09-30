@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
 import HeroSection from '@/components/HeroSection';
 import StoryCard from '@/components/StoryCard';
 import { useModal } from '@/context/ModalContext';
@@ -56,62 +57,27 @@ export default function HomePageClient({ stories, genres, languageNames, categor
   // Filter logic
   const filteredStories = useMemo(() => {
     let result = stories;
-
-    // Filter by language (case-insensitive)
     if (selectedLanguage && selectedLanguage !== 'All Languages') {
       result = result.filter(s => s.language?.toLowerCase() === selectedLanguage.toLowerCase());
     }
-
-    // Filter by category
-    if (selectedCategory) {
-      const cat = selectedCategory.toLowerCase();
-      
-      // Keep hardcoded flexible logic for special UI tabs if they exist,
-      // but also add exact matching for real database categories.
-      if (cat === 'short stories') {
-        result = result.filter(s => s.genre?.toLowerCase().includes('short') || s.tags?.includes('Short Read'));
-      } else if (cat === 'long stories') {
-        result = result.filter(s => parseInt(s.readingTime || '0') > 20 || s.episodes.length > 2);
-      } else if (cat === 'fun stories') {
-        result = result.filter(s => s.genre?.toLowerCase().includes('comedy') || s.tags?.includes('Fun'));
-      } else {
-        // For real database categories (e.g., "Novels", "Fantasy", etc)
-        // Check if the story's genre/category matches the selected one.
-        // Fallback: exclude 'short' if no specific match logic is found and it's just a general tab.
-        result = result.filter(s => 
-          s.genre?.toLowerCase() === cat || 
-          s.genreId?.toLowerCase() === cat ||
-          !s.genre?.toLowerCase().includes('short') // fallback for 'Novels' or other general categories
-        );
-      }
-    }
-
     return result;
-  }, [selectedLanguage, selectedCategory, stories]);
+  }, [selectedLanguage, stories]);
 
   const popularStories = filteredStories.filter(s => s.featured);
   const trendingStories = filteredStories.filter(s => s.recommended);
-  const latestStories = [...filteredStories].reverse().slice(0, 4);
+  const latestStories = [...filteredStories].reverse().slice(0, 8);
+
+  const longStories = filteredStories.filter(s => parseInt(s.readingTime || '0') > 20 || s.episodes?.length > 2 || s.genre?.toLowerCase() === 'long stories' || s.genreId?.toLowerCase() === 'long-stories');
+  const shortStories = filteredStories.filter(s => s.genre?.toLowerCase().includes('short') || s.genreId?.toLowerCase().includes('short') || s.tags?.includes('Short Read'));
+  const novels = filteredStories.filter(s => s.genre?.toLowerCase() === 'novels' || s.genreId?.toLowerCase() === 'novels' || s.genre?.toLowerCase() === 'novel');
+  const funStories = filteredStories.filter(s => s.genre?.toLowerCase() === 'fun stories' || s.genreId?.toLowerCase() === 'fun-stories' || s.tags?.includes('Fun'));
+  const comedyStories = filteredStories.filter(s => s.genre?.toLowerCase() === 'comedy stories' || s.genreId?.toLowerCase() === 'comedy-stories' || s.genre?.toLowerCase() === 'comedy' || s.genreId?.toLowerCase() === 'comedy');
+
+
 
   return (
     <>
-      {/* ──── COMPACT STORY NAVIGATION ──── */}
-      <nav className="compact-story-nav">
-        <div className="container">
-          <ul className="story-nav-list">
-            {categoryNames.map(cat => (
-              <li key={cat}>
-                <button
-                  className={`story-nav-btn ${selectedCategory === cat ? 'active' : ''}`}
-                  onClick={() => setSelectedCategory(cat)}
-                >
-                  {cat}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </nav>
+
 
       {/* ──── HERO & SEARCH ──── */}
       <HeroSection />
@@ -137,17 +103,19 @@ export default function HomePageClient({ stories, genres, languageNames, categor
         </div>
       </section>
 
-      {/* ──── POPULAR NOVELS ──── */}
+      {/* ──── POPULAR STORIES ──── */}
       <section className="section bg-main pt-0">
         <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">{t('Popular Novels')}</h2>
+          <div className="section-header-flex">
+            <h2 className="section-title">{t('Popular Stories')}</h2>
           </div>
           {popularStories.length > 0 ? (
-            <div className="stories-grid">
-              {popularStories.map((story) => (
-                <StoryCard key={story.id} story={story} />
-              ))}
+            <div className="carousel-container">
+              <div className="stories-carousel">
+                {popularStories.map((story) => (
+                  <StoryCard key={story.id} story={story} />
+                ))}
+              </div>
             </div>
           ) : (
             <div className="empty-state">{t('No popular stories found for this filter.')}</div>
@@ -158,14 +126,16 @@ export default function HomePageClient({ stories, genres, languageNames, categor
       {/* ──── TRENDING STORIES ──── */}
       <section className="section bg-main">
         <div className="container">
-          <div className="section-header">
+          <div className="section-header-flex">
             <h2 className="section-title">{t('Trending Stories')}</h2>
           </div>
           {trendingStories.length > 0 ? (
-            <div className="stories-grid">
-              {trendingStories.map((story) => (
-                <StoryCard key={story.id} story={story} />
-              ))}
+            <div className="carousel-container">
+              <div className="stories-carousel">
+                {trendingStories.map((story) => (
+                  <StoryCard key={story.id} story={story} />
+                ))}
+              </div>
             </div>
           ) : (
             <div className="empty-state">{t('No trending stories found for this filter.')}</div>
@@ -173,20 +143,127 @@ export default function HomePageClient({ stories, genres, languageNames, categor
         </div>
       </section>
 
-      {/* ──── LATEST NOVEL CHAPTERS & STORIES ──── */}
+      {/* ──── LATEST STORIES ──── */}
       <section className="section bg-main">
         <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">{t('Latest Novel Chapters & Stories')}</h2>
+          <div className="section-header-flex">
+            <h2 className="section-title">{t('Latest Stories')}</h2>
           </div>
           {latestStories.length > 0 ? (
-            <div className="stories-grid">
-              {latestStories.map((story) => (
-                <StoryCard key={story.id} story={story} />
-              ))}
+            <div className="carousel-container">
+              <div className="stories-carousel">
+                {latestStories.map((story) => (
+                  <StoryCard key={story.id} story={story} />
+                ))}
+              </div>
             </div>
           ) : (
             <div className="empty-state">{t('No latest stories found for this filter.')}</div>
+          )}
+        </div>
+      </section>
+
+      {/* ──── LONG STORIES ──── */}
+      <section className="section bg-main">
+        <div className="container">
+          <div className="section-header-flex">
+            <h2 className="section-title">{t('Long Stories')}</h2>
+            <Link href="/long-stories" className="view-all-link">View All &rarr;</Link>
+          </div>
+          {longStories.length > 0 ? (
+            <div className="carousel-container">
+              <div className="stories-carousel">
+                {longStories.map((story) => (
+                  <StoryCard key={story.id} story={story} />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="empty-state">{t('No long stories found for this filter.')}</div>
+          )}
+        </div>
+      </section>
+
+      {/* ──── SHORT STORIES ──── */}
+      <section className="section bg-main">
+        <div className="container">
+          <div className="section-header-flex">
+            <h2 className="section-title">{t('Short Stories')}</h2>
+            <Link href="/short-stories" className="view-all-link">View All &rarr;</Link>
+          </div>
+          {shortStories.length > 0 ? (
+            <div className="carousel-container">
+              <div className="stories-carousel">
+                {shortStories.map((story) => (
+                  <StoryCard key={story.id} story={story} />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="empty-state">{t('No short stories found for this filter.')}</div>
+          )}
+        </div>
+      </section>
+
+      {/* ──── NOVELS ──── */}
+      <section className="section bg-main">
+        <div className="container">
+          <div className="section-header-flex">
+            <h2 className="section-title">{t('Novels')}</h2>
+            <Link href="/novels" className="view-all-link">View All &rarr;</Link>
+          </div>
+          {novels.length > 0 ? (
+            <div className="carousel-container">
+              <div className="stories-carousel">
+                {novels.map((story) => (
+                  <StoryCard key={story.id} story={story} />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="empty-state">{t('No novels found for this filter.')}</div>
+          )}
+        </div>
+      </section>
+
+      {/* ──── FUN STORIES ──── */}
+      <section className="section bg-main">
+        <div className="container">
+          <div className="section-header-flex">
+            <h2 className="section-title">{t('Fun Stories')}</h2>
+            <Link href="/fun-stories" className="view-all-link">View All &rarr;</Link>
+          </div>
+          {funStories.length > 0 ? (
+            <div className="carousel-container">
+              <div className="stories-carousel">
+                {funStories.map((story) => (
+                  <StoryCard key={story.id} story={story} />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="empty-state">{t('No fun stories found for this filter.')}</div>
+          )}
+        </div>
+      </section>
+
+      {/* ──── COMEDY STORIES ──── */}
+      <section className="section bg-main">
+        <div className="container">
+          <div className="section-header-flex">
+            <h2 className="section-title">{t('Comedy Stories')}</h2>
+            <Link href="/comedy-stories" className="view-all-link">View All &rarr;</Link>
+          </div>
+          {comedyStories.length > 0 ? (
+            <div className="carousel-container">
+              <div className="stories-carousel">
+                {comedyStories.map((story) => (
+                  <StoryCard key={story.id} story={story} />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="empty-state">{t('No comedy stories found for this filter.')}</div>
           )}
         </div>
       </section>
@@ -357,25 +434,53 @@ export default function HomePageClient({ stories, genres, languageNames, categor
           pointer-events: none;
         }
 
-        /* ── Stories Grid ── */
-        .stories-grid {
-          display: grid;
-          grid-template-columns: 1fr;
+        /* ── Stories Carousel ── */
+        .carousel-container {
+          position: relative;
+          width: 100%;
+        }
+
+        .stories-carousel {
+          display: flex;
           gap: 16px;
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
+          padding-bottom: 16px;
+          scrollbar-width: thin;
+        }
+
+        .stories-carousel > * {
+          flex: 0 0 280px;
+          scroll-snap-align: start;
         }
 
         @media (min-width: 640px) {
-          .stories-grid {
-            grid-template-columns: repeat(2, 1fr);
+          .stories-carousel > * {
+            flex: 0 0 300px;
           }
         }
 
-        @media (min-width: 1024px) {
-          .stories-grid {
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-          }
+        .section-header-flex {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 24px;
         }
+
+        .view-all-link {
+          font-size: 0.95rem;
+          font-weight: 600;
+          color: var(--royal-blue);
+          text-decoration: none;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+
+        .view-all-link:hover {
+          text-decoration: underline;
+        }
+
 
         .empty-state {
           padding: 40px 20px;

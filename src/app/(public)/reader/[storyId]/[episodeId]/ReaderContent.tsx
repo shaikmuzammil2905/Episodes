@@ -59,11 +59,12 @@ export default function ReaderContent({
 
         {/* Content */}
         <article className="reader-article">
-          {episode.content.split('\n\n').map((para, i) => {
+          {episode.content.split(/\n+/).map((para, i) => {
+            if (!para.trim()) return null;
             if (para.startsWith('*') && para.endsWith('*')) {
-              return <p key={i} className="italic-block">{para.replace(/^\*|\*$/g, '')}</p>;
+              return <p key={i} className="italic-block">{para.trim().replace(/^\*|\*$/g, '')}</p>;
             }
-            return <p key={i}>{para}</p>;
+            return <p key={i}>{para.trim()}</p>;
           })}
         </article>
 

@@ -114,6 +114,11 @@ export async function createStory(formData: FormData) {
   revalidatePath('/admin/stories')
   revalidatePath('/', 'layout')
   revalidatePath('/stories')
+  revalidatePath('/long-stories')
+  revalidatePath('/short-stories')
+  revalidatePath('/novels')
+  revalidatePath('/fun-stories')
+  revalidatePath('/comedy-stories')
 
   return { data }
 }
@@ -180,6 +185,11 @@ export async function updateStory(id: string, formData: FormData) {
   revalidatePath('/admin/stories')
   revalidatePath('/', 'layout')
   revalidatePath('/stories')
+  revalidatePath('/long-stories')
+  revalidatePath('/short-stories')
+  revalidatePath('/novels')
+  revalidatePath('/fun-stories')
+  revalidatePath('/comedy-stories')
 
   return { data }
 }
@@ -199,6 +209,11 @@ export async function deleteStory(id: string) {
   revalidatePath('/admin/stories')
   revalidatePath('/', 'layout')
   revalidatePath('/stories')
+  revalidatePath('/long-stories')
+  revalidatePath('/short-stories')
+  revalidatePath('/novels')
+  revalidatePath('/fun-stories')
+  revalidatePath('/comedy-stories')
 
   return { success: true }
 }
