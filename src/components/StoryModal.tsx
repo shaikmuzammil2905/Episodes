@@ -1,16 +1,38 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useTransition } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Episode, Story } from '@/lib/types';
 import { useModal } from '@/context/ModalContext';
 import { getRelatedStories } from '@/lib/data';
 import StoryCard from './StoryCard';
 
 export default function StoryModal() {
+  const pathname = usePathname();
   const { activeStory, closeStoryModal } = useModal();
   const [liveRelated, setLiveRelated] = useState<Story[]>([]);
+  const [navigatingEpisodeId, setNavigatingEpisodeId] = useState<string | null>(null);
+
+  // Close modal only when route changes into reader or new route
+  useEffect(() => {
+    if (navigatingEpisodeId && pathname.includes('/reader/')) {
+      closeStoryModal();
+      setNavigatingEpisodeId(null);
+    }
+  }, [pathname, navigatingEpisodeId, closeStoryModal]);
+
+  // Safety timer to clear loading state if navigation was cancelled
+  useEffect(() => {
+    if (navigatingEpisodeId) {
+      const timer = setTimeout(() => {
+        closeStoryModal();
+        setNavigatingEpisodeId(null);
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [navigatingEpisodeId, closeStoryModal]);
 
   useEffect(() => {
     if (!activeStory) return;
@@ -44,6 +66,10 @@ export default function StoryModal() {
   const episodes = activeStory.episodes || [];
   const relatedStories = liveRelated.length > 0 ? liveRelated : getRelatedStories(activeStory.id, 2);
   const firstEpisode = episodes[0];
+
+  const handleEpisodeClick = (epId: string) => {
+    setNavigatingEpisodeId(epId);
+  };
 
   return (
     <div className="modal-backdrop" onClick={closeStoryModal}>
@@ -97,13 +123,22 @@ export default function StoryModal() {
             {firstEpisode ? (
               <Link
                 href={`/reader/${activeStory.id}/${firstEpisode.id}`}
-                className="btn-primary start-reading-btn"
-                onClick={closeStoryModal}
+                className={`btn-primary start-reading-btn ${navigatingEpisodeId === firstEpisode.id ? 'is-navigating' : ''}`}
+                onClick={() => handleEpisodeClick(firstEpisode.id)}
               >
-                <span>Start Reading (Episode 1)</span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
+                {navigatingEpisodeId === firstEpisode.id ? (
+                  <>
+                    <span className="ep-spinner" />
+                    <span>Opening Episode 1...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Start Reading (Episode 1)</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </>
+                )}
               </Link>
             ) : (
               <button className="btn-primary start-reading-btn" disabled>
@@ -145,23 +180,32 @@ export default function StoryModal() {
                 </div>
 
                 <div className="episodes-grid">
-                  {episodes.map((ep: Episode) => (
-                    <Link
-                      key={ep.id}
-                      href={`/reader/${activeStory.id}/${ep.id}`}
-                      className="episode-item"
-                      onClick={closeStoryModal}
-                    >
-                      <div className="ep-num">Ep {ep.episodeNumber}</div>
-                      <div className="ep-info">
-                        <div className="ep-title">{ep.title}</div>
-                        <div className="ep-summary">{ep.summary}</div>
-                      </div>
-                      <div className="ep-action">
-                        <span className="read-icon">Read →</span>
-                      </div>
-                    </Link>
-                  ))}
+                  {episodes.map((ep: Episode) => {
+                    const isOpening = navigatingEpisodeId === ep.id;
+                    return (
+                      <Link
+                        key={ep.id}
+                        href={`/reader/${activeStory.id}/${ep.id}`}
+                        className={`episode-item ${isOpening ? 'is-loading' : ''}`}
+                        onClick={() => handleEpisodeClick(ep.id)}
+                      >
+                        <div className="ep-num">Ep {ep.episodeNumber}</div>
+                        <div className="ep-info">
+                          <div className="ep-title">{ep.title}</div>
+                          <div className="ep-summary">{ep.summary}</div>
+                        </div>
+                        <div className="ep-action">
+                          {isOpening ? (
+                            <span className="loading-tag">
+                              <span className="ep-spinner small" /> Opening...
+                            </span>
+                          ) : (
+                            <span className="read-icon">Read →</span>
+                          )}
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               </section>
             </div>
@@ -370,6 +414,53 @@ export default function StoryModal() {
           width: 100%;
           padding: 14px 28px;
           font-size: 1.05rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+        }
+
+        .start-reading-btn.is-navigating {
+          opacity: 0.9;
+          pointer-events: none;
+        }
+
+        .ep-spinner {
+          width: 18px;
+          height: 18px;
+          border: 2.5px solid rgba(255, 255, 255, 0.35);
+          border-top-color: #fff;
+          border-radius: 50%;
+          animation: epSpin 0.7s linear infinite;
+          display: inline-block;
+          flex-shrink: 0;
+        }
+
+        .ep-spinner.small {
+          width: 13px;
+          height: 13px;
+          border-width: 2px;
+          border-color: rgba(37, 99, 235, 0.25);
+          border-top-color: var(--royal-blue);
+        }
+
+        .loading-tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: var(--royal-blue);
+        }
+
+        .episode-item.is-loading {
+          background: var(--bg-light-blue);
+          border-color: var(--royal-blue);
+          pointer-events: none;
+        }
+
+        @keyframes epSpin {
+          to { transform: rotate(360deg); }
         }
 
         .story-body-grid {
