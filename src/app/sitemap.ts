@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { getPublicStories } from '@/lib/supabase/queries'
 
-const SITE_URL = 'https://thestorynovels.com'
+const SITE_URL = 'https://www.thestorynovels.com'
 
 export const revalidate = 3600 // Revalidate every hour
 

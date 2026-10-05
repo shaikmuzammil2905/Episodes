@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/admin', '/admin/', '/api/', '/auth/'],
       },
     ],
-    sitemap: 'https://thestorynovels.com/sitemap.xml',
+    sitemap: 'https://www.thestorynovels.com/sitemap.xml',
   }
 }
