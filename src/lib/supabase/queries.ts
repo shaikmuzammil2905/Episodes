@@ -38,7 +38,7 @@ function transformStory(row: any): Story {
     isPremium: row.access_type === 'premium',
     tags: [],
     readingTime: episodes.length > 0 ? `${episodes.length * 5} min total` : undefined,
-    whyRead: row.full_synopsis || row.short_synopsis || '',
+    whyRead: '',
     featured: row.featured || false,
     recommended: row.trending || false,
     latest: true,
@@ -83,7 +83,9 @@ export async function getPublicStories(filters?: {
 
   let stories = (data || []).map(row => {
     if (row.episodes) {
-      row.episodes = row.episodes.filter((ep: any) => ep.status === 'published')
+      row.episodes = row.episodes
+        .filter((ep: any) => ep.status === 'published')
+        .sort((a: any, b: any) => Number(a.episode_number) - Number(b.episode_number))
     }
     return transformStory(row)
   })

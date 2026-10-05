@@ -63,7 +63,10 @@ export default function StoryModal() {
 
   if (!activeStory) return null;
 
-  const episodes = activeStory.episodes || [];
+  // Sort episodes numerically by episode number — do NOT rely on DB insertion order
+  const episodes = [...(activeStory.episodes || [])].sort(
+    (a, b) => Number(a.episodeNumber) - Number(b.episodeNumber)
+  );
   const relatedStories = liveRelated.length > 0 ? liveRelated : getRelatedStories(activeStory.id, 2);
   const firstEpisode = episodes[0];
 
@@ -150,27 +153,15 @@ export default function StoryModal() {
           {/* Story Details Sections */}
           <div className="story-body-grid">
             <div className="main-info">
-              <div className="story-details-row">
-                <section className="info-block">
-                  <h3>Synopsis</h3>
-                  <div className="description-text">
-                    {(activeStory.fullDescription || '').split(/\n+/).filter(Boolean).map((p, idx) => (
-                      <p key={idx}>{p}</p>
-                    ))}
-                  </div>
-                </section>
-
-                {activeStory.whyRead && (
-                  <section className="info-block why-read-box">
-                    <h4>💡 Why Read This Story?</h4>
-                    <div className="description-text">
-                      {activeStory.whyRead.split(/\n+/).filter(Boolean).map((p, idx) => (
-                        <p key={idx}>{p}</p>
-                      ))}
-                    </div>
-                  </section>
-                )}
-              </div>
+              {/* Synopsis — single instance, no duplication */}
+              <section className="info-block">
+                <h3>Synopsis</h3>
+                <div className="description-text">
+                  {(activeStory.fullDescription || '').split(/\n+/).filter(Boolean).map((p, idx) => (
+                    <p key={idx}>{p}</p>
+                  ))}
+                </div>
+              </section>
 
               {/* Episode List Section */}
               <section className="info-block episode-list-block">
@@ -220,8 +211,6 @@ export default function StoryModal() {
                   ))}
                 </div>
               </div>
-
-              {/* related stories moved to bottom */}
             </div>
           </div>
           
@@ -501,39 +490,7 @@ export default function StoryModal() {
           margin-bottom: 0;
         }
         
-        .story-details-row {
-          display: flex;
-          flex-direction: column;
-          gap: 24px;
-          margin-bottom: 24px;
-        }
-        
-        @media (min-width: 768px) {
-          .story-details-row {
-            flex-direction: row;
-            align-items: stretch;
-          }
-          .story-details-row > .info-block {
-            flex: 1;
-            margin-bottom: 0;
-            display: flex;
-            flex-direction: column;
-          }
-        }
-
-        .why-read-box {
-          background: var(--bg-cream);
-          border: 1px solid var(--accent-gold-light);
-          padding: 16px;
-          border-radius: var(--radius-md);
-        }
-
-        .why-read-box h4 {
-          color: var(--text-gold);
-          font-size: 0.95rem;
-          font-weight: 700;
-          margin-bottom: 12px;
-        }
+        /* story-details-row and why-read-box removed — synopsis is now a single block */
 
         .episodes-header {
           display: flex;

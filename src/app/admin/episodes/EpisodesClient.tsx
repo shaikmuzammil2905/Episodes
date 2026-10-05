@@ -39,7 +39,7 @@ export default function EpisodesClient({ initialEpisodes, stories }: { initialEp
     if (filterStoryId && ep.story_id !== filterStoryId) return false
     if (filterStatus && ep.status !== filterStatus) return false
     return true
-  })
+  }).sort((a, b) => Number(a.episode_number) - Number(b.episode_number))
 
   const getNextAvailableEpisodeNumber = (storyId: string) => {
     if (!storyId) return 1

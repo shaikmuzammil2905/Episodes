@@ -159,10 +159,13 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
     .filter(s => s.id !== story!.id && (s.genreId === story!.genreId || s.language === story!.language))
     .slice(0, 3);
 
-  // 6. Find prev/next episodes
-  const currentIndex = story.episodes.findIndex((e: any) => e.id === episode!.id);
-  const prevEpisode = currentIndex > 0 ? story.episodes[currentIndex - 1] : null;
-  const nextEpisode = currentIndex < story.episodes.length - 1 ? story.episodes[currentIndex + 1] : null;
+  // 6. Find prev/next episodes — sort numerically first
+  const sortedEpisodes = [...story.episodes].sort(
+    (a: any, b: any) => Number(a.episodeNumber) - Number(b.episodeNumber)
+  );
+  const currentIndex = sortedEpisodes.findIndex((e: any) => e.id === episode!.id);
+  const prevEpisode = currentIndex > 0 ? sortedEpisodes[currentIndex - 1] : null;
+  const nextEpisode = currentIndex < sortedEpisodes.length - 1 ? sortedEpisodes[currentIndex + 1] : null;
 
   return (
     <ReaderContent
