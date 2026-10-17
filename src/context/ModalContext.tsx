@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 import { Story, Genre } from '@/lib/types';
 
 export interface HowItWorksStep {
@@ -59,65 +59,84 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
   // WhatsApp Modal State
   const [isWhatsAppOpen, setIsWhatsAppOpen] = useState(false);
 
-  const openStoryModal = (story: Story) => {
+  const openStoryModal = useCallback((story: Story) => {
     setSelectedStory(story);
     setIsStoryModalOpen(true);
-  };
+  }, []);
 
-  const closeStoryModal = () => {
+  const closeStoryModal = useCallback(() => {
     setIsStoryModalOpen(false);
     setSelectedStory(null);
-  };
+  }, []);
 
-  const openGenreModal = (genre: Genre) => {
+  const openGenreModal = useCallback((genre: Genre) => {
     setSelectedGenre(genre);
     setIsGenreModalOpen(true);
-  };
+  }, []);
 
-  const closeGenreModal = () => {
+  const closeGenreModal = useCallback(() => {
     setIsGenreModalOpen(false);
     setSelectedGenre(null);
-  };
+  }, []);
 
-  const openStepModal = (step: HowItWorksStep) => {
+  const openStepModal = useCallback((step: HowItWorksStep) => {
     setSelectedStep(step);
     setIsStepModalOpen(true);
-  };
+  }, []);
 
-  const closeStepModal = () => {
+  const closeStepModal = useCallback(() => {
     setIsStepModalOpen(false);
     setSelectedStep(null);
-  };
+  }, []);
 
-  const openWhatsAppModal = () => {
+  const openWhatsAppModal = useCallback(() => {
     setIsWhatsAppOpen(true);
-  };
+  }, []);
 
-  const closeWhatsAppModal = () => {
+  const closeWhatsAppModal = useCallback(() => {
     setIsWhatsAppOpen(false);
-  };
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      selectedStory,
+      activeStory: selectedStory,
+      isStoryModalOpen,
+      openStoryModal,
+      closeStoryModal,
+      selectedGenre,
+      isGenreModalOpen,
+      openGenreModal,
+      closeGenreModal,
+      selectedStep,
+      isStepModalOpen,
+      openStepModal,
+      closeStepModal,
+      isWhatsAppOpen,
+      openWhatsAppModal,
+      closeWhatsAppModal,
+    }),
+    [
+      selectedStory,
+      isStoryModalOpen,
+      openStoryModal,
+      closeStoryModal,
+      selectedGenre,
+      isGenreModalOpen,
+      openGenreModal,
+      closeGenreModal,
+      selectedStep,
+      isStepModalOpen,
+      openStepModal,
+      closeStepModal,
+      isWhatsAppOpen,
+      openWhatsAppModal,
+      closeWhatsAppModal,
+    ]
+  );
 
   return (
-    <ModalContext.Provider
-      value={{
-        selectedStory,
-        activeStory: selectedStory,
-        isStoryModalOpen,
-        openStoryModal,
-        closeStoryModal,
-        selectedGenre,
-        isGenreModalOpen,
-        openGenreModal,
-        closeGenreModal,
-        selectedStep,
-        isStepModalOpen,
-        openStepModal,
-        closeStepModal,
-        isWhatsAppOpen,
-        openWhatsAppModal,
-        closeWhatsAppModal,
-      }}
-    >
+    <ModalContext.Provider value={value}>
       {children}
     </ModalContext.Provider>
   );

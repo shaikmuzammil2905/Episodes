@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useTransition } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -11,15 +11,45 @@ import StoryCard from './StoryCard';
 
 export default function StoryModal() {
   const pathname = usePathname();
+  const prevPathnameRef = useRef(pathname);
+  const scrollContentRef = useRef<HTMLDivElement>(null);
   const { activeStory, closeStoryModal } = useModal();
   const [liveRelated, setLiveRelated] = useState<Story[]>([]);
   const [navigatingEpisodeId, setNavigatingEpisodeId] = useState<string | null>(null);
 
-  // Close modal when route changes into reader or new route
+  // Close modal only when route actually changes into reader or new route
   useEffect(() => {
-    closeStoryModal();
-    setNavigatingEpisodeId(null);
+    if (prevPathnameRef.current !== pathname) {
+      prevPathnameRef.current = pathname;
+      closeStoryModal();
+      setNavigatingEpisodeId(null);
+    }
   }, [pathname, closeStoryModal]);
+
+  // Keep prevPathnameRef updated if modal is closed
+  useEffect(() => {
+    if (!activeStory) {
+      prevPathnameRef.current = pathname;
+    }
+  }, [activeStory, pathname]);
+
+  // Prevent background scrolling while modal is open
+  useEffect(() => {
+    if (activeStory) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [activeStory]);
+
+  // Reset modal scroll position when switching active stories
+  useEffect(() => {
+    if (activeStory && scrollContentRef.current) {
+      scrollContentRef.current.scrollTop = 0;
+    }
+  }, [activeStory?.id]);
 
   // Safety timer to clear loading state if navigation was cancelled
   useEffect(() => {
@@ -70,6 +100,10 @@ export default function StoryModal() {
 
   const handleEpisodeClick = (epId: string) => {
     setNavigatingEpisodeId(epId);
+    // If user is already on the target episode page, close modal immediately
+    if (pathname === `/${epId}` || pathname.endsWith(`/${epId}`)) {
+      closeStoryModal();
+    }
   };
 
   return (
@@ -82,7 +116,7 @@ export default function StoryModal() {
           </svg>
         </button>
 
-        <div className="modal-scroll-content">
+        <div ref={scrollContentRef} className="modal-scroll-content">
           {/* Header Banner & Artwork */}
           <div className="story-hero-banner">
             <div className="cover-img-box">

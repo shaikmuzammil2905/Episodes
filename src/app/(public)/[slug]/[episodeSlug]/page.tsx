@@ -1,7 +1,7 @@
 import { redirect, RedirectType } from 'next/navigation';
 
 interface StoryEpisodeProps {
-  params: Promise<{ storySlug: string; episodeSlug: string }>;
+  params: Promise<{ slug: string; episodeSlug: string }>;
 }
 
 export default async function StoryEpisodePage({ params }: StoryEpisodeProps) {
