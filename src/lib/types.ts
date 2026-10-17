@@ -1,5 +1,6 @@
 export interface Episode {
   id: string; // e.g. "episode-1"
+  slug?: string;
   storyId: string;
   episodeNumber: number;
   title: string;

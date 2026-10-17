@@ -6,6 +6,7 @@ import { matchesLanguage, isStoryType, matchesSearch } from '@/lib/normalization
 function transformStory(row: any): Story {
   const episodes: Episode[] = (row.episodes || []).map((ep: any) => ({
     id: ep.id,
+    slug: ep.slug,
     storyId: row.id,
     episodeNumber: ep.episode_number,
     title: ep.title,
@@ -184,6 +185,78 @@ export async function getPublicStoryById(id: string): Promise<Story | null> {
   }
 
   return transformStory(data)
+}
+
+export async function getPublicEpisodeBySlug(slugOrId: string): Promise<{ story: Story; episode: Episode } | null> {
+  const supabase = createPublicClient()
+  const clean = decodeURIComponent(slugOrId).trim().toLowerCase()
+
+  // 1. Try finding by exact/ilike slug
+  let { data: epRow } = await supabase
+    .from('episodes')
+    .select(`
+      *,
+      story:stories(
+        *,
+        author:authors(*),
+        language:languages(*),
+        category:categories(*),
+        story_genres(genre_id, genres(*)),
+        episodes:episodes(*)
+      )
+    `)
+    .ilike('slug', clean)
+    .eq('status', 'published')
+    .maybeSingle()
+
+  // 2. If not found, try by ID
+  if (!epRow) {
+    const res = await supabase
+      .from('episodes')
+      .select(`
+        *,
+        story:stories(
+          *,
+          author:authors(*),
+          language:languages(*),
+          category:categories(*),
+          story_genres(genre_id, genres(*)),
+          episodes:episodes(*)
+        )
+      `)
+      .eq('id', clean)
+      .eq('status', 'published')
+      .maybeSingle()
+    epRow = res.data
+  }
+
+  if (epRow && epRow.story) {
+    if (epRow.story.status !== 'published') return null
+
+    if (epRow.story.episodes) {
+      epRow.story.episodes = epRow.story.episodes
+        .filter((ep: any) => ep.status === 'published')
+        .sort((a: any, b: any) => Number(a.episode_number) - Number(b.episode_number))
+    }
+
+    const story = transformStory(epRow.story)
+    const episode: Episode = {
+      id: epRow.id,
+      slug: epRow.slug,
+      storyId: epRow.story_id,
+      episodeNumber: epRow.episode_number,
+      title: epRow.title,
+      summary: epRow.summary || '',
+      content: epRow.content || '',
+      readingTime: `${Math.max(1, Math.ceil((epRow.content?.length || 0) / 1000))} min`,
+      publishedAt: epRow.published_at || epRow.created_at,
+      image: epRow.cover_url || epRow.image_url || undefined,
+    }
+
+    return { story, episode }
+  }
+
+  return null
 }
 
 export async function getPublicLanguages(): Promise<{ id: string; name: string; code: string }[]> {

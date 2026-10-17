@@ -15,13 +15,11 @@ export default function StoryModal() {
   const [liveRelated, setLiveRelated] = useState<Story[]>([]);
   const [navigatingEpisodeId, setNavigatingEpisodeId] = useState<string | null>(null);
 
-  // Close modal only when route changes into reader or new route
+  // Close modal when route changes into reader or new route
   useEffect(() => {
-    if (navigatingEpisodeId && pathname.includes('/reader/')) {
-      closeStoryModal();
-      setNavigatingEpisodeId(null);
-    }
-  }, [pathname, navigatingEpisodeId, closeStoryModal]);
+    closeStoryModal();
+    setNavigatingEpisodeId(null);
+  }, [pathname, closeStoryModal]);
 
   // Safety timer to clear loading state if navigation was cancelled
   useEffect(() => {
@@ -125,11 +123,11 @@ export default function StoryModal() {
           <div className="action-bar">
             {firstEpisode ? (
               <Link
-                href={`/reader/${activeStory.id}/${firstEpisode.id}`}
-                className={`btn-primary start-reading-btn ${navigatingEpisodeId === firstEpisode.id ? 'is-navigating' : ''}`}
-                onClick={() => handleEpisodeClick(firstEpisode.id)}
+                href={`/${firstEpisode.slug || firstEpisode.id}`}
+                className={`btn-primary start-reading-btn ${navigatingEpisodeId === (firstEpisode.slug || firstEpisode.id) ? 'is-navigating' : ''}`}
+                onClick={() => handleEpisodeClick(firstEpisode.slug || firstEpisode.id)}
               >
-                {navigatingEpisodeId === firstEpisode.id ? (
+                {navigatingEpisodeId === (firstEpisode.slug || firstEpisode.id) ? (
                   <>
                     <span className="ep-spinner" />
                     <span>Opening Episode 1...</span>
@@ -172,13 +170,14 @@ export default function StoryModal() {
 
                 <div className="episodes-grid">
                   {episodes.map((ep: Episode) => {
-                    const isOpening = navigatingEpisodeId === ep.id;
+                    const epTarget = ep.slug || ep.id;
+                    const isOpening = navigatingEpisodeId === epTarget;
                     return (
                       <Link
                         key={ep.id}
-                        href={`/reader/${activeStory.id}/${ep.id}`}
+                        href={`/${epTarget}`}
                         className={`episode-item ${isOpening ? 'is-loading' : ''}`}
-                        onClick={() => handleEpisodeClick(ep.id)}
+                        onClick={() => handleEpisodeClick(epTarget)}
                       >
                         <div className="ep-num">Ep {ep.episodeNumber}</div>
                         <div className="ep-info">

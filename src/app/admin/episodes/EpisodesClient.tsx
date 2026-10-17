@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createEpisode, updateEpisode, deleteEpisode, toggleEpisodeStatus } from '@/actions/episodes'
-import { Plus, Edit2, Trash2, Check, X, LayoutList, Loader2 } from 'lucide-react'
+import { Plus, Edit2, Trash2, Check, X, LayoutList, Loader2, ExternalLink } from 'lucide-react'
 import { ImageUpload } from '@/components/ImageUpload'
 
 interface EpisodeRow {
@@ -62,7 +62,7 @@ export default function EpisodesClient({ initialEpisodes, stories }: { initialEp
     setEditingId(null) 
   }
   const showMsg = (type: 'success' | 'error', text: string) => { setMessage({ type, text }); setTimeout(() => setMessage(null), 4000) }
-  const generateSlug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+  const generateSlug = (t: string) => t.toLowerCase().replace(/[^a-z0-9\u0C00-\u0C7F]+/g, '-').replace(/(^-|-$)/g, '')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -237,6 +237,7 @@ export default function EpisodesClient({ initialEpisodes, stories }: { initialEp
                 </td>
                 <td className="px-4 py-3"><span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${ep.access_type === 'free' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}`}>{ep.access_type}</span></td>
                 <td className="px-4 py-3 text-right">
+                  <a href={`/${ep.slug || ep.id}`} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-indigo-600 mr-2 inline-flex items-center" title="Preview Episode"><ExternalLink className="w-4 h-4" /></a>
                   <button onClick={() => handleEdit(ep)} className="text-blue-600 hover:text-blue-800 mr-2"><Edit2 className="w-4 h-4" /></button>
                   <button onClick={() => handleDelete(ep.id)} className="text-red-500 hover:text-red-700"><Trash2 className="w-4 h-4" /></button>
                 </td>

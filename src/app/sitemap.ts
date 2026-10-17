@@ -82,18 +82,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  // Dynamic story pages
+  // Dynamic story & episode pages
   let storyPages: MetadataRoute.Sitemap = []
   try {
     const stories = await getPublicStories()
-    storyPages = stories
-      .filter((story) => story.episodes && story.episodes.length > 0)
-      .map((story) => ({
-        url: `${SITE_URL}/reader/${story.id}/${story.episodes[0].id}`,
-        lastModified: new Date(),
-        changeFrequency: 'weekly' as const,
-        priority: 0.8,
-      }))
+    for (const story of stories) {
+      if (story.episodes && story.episodes.length > 0) {
+        for (const ep of story.episodes) {
+          const slug = ep.slug || ep.id
+          storyPages.push({
+            url: `${SITE_URL}/${slug}`,
+            lastModified: new Date(ep.publishedAt || Date.now()),
+            changeFrequency: 'weekly' as const,
+            priority: 0.8,
+          })
+        }
+      }
+    }
   } catch {
     // If DB is unreachable, just return static pages
   }

@@ -71,7 +71,7 @@ export default function ReaderContent({
         {/* Episode Navigation */}
         <div className="episode-nav">
           {prevEpisode ? (
-            <Link href={`/reader/${story.id}/${prevEpisode.id}`} className="ep-nav-btn prev">
+            <Link href={`/${prevEpisode.slug || prevEpisode.id}`} className="ep-nav-btn prev">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M19 12H5M12 19l-7-7 7-7" />
               </svg>
@@ -85,7 +85,7 @@ export default function ReaderContent({
           )}
 
           {nextEpisode ? (
-            <Link href={`/reader/${story.id}/${nextEpisode.id}`} className="ep-nav-btn next">
+            <Link href={`/${nextEpisode.slug || nextEpisode.id}`} className="ep-nav-btn next">
               <div className="ep-nav-text right">
                 <span className="ep-nav-label">Next Episode</span>
                 <span className="ep-nav-title">{nextEpisode.title}</span>

@@ -317,9 +317,42 @@ export function getEpisodesByStory(storyId: string): Episode[] {
 export function getEpisodeById(storyId: string, episodeId: string): { story: Story; episode: Episode } | undefined {
   const story = getStoryById(storyId);
   if (!story) return undefined;
-  const episode = story.episodes.find((e) => e.id.toLowerCase() === episodeId.toLowerCase());
+  const episode = story.episodes.find(
+    (e) =>
+      e.id.toLowerCase() === episodeId.toLowerCase() ||
+      (e.slug && e.slug.toLowerCase() === episodeId.toLowerCase())
+  );
   if (!episode) return undefined;
   return { story, episode };
+}
+
+export function getLocalEpisodeBySlug(slug: string): { story: Story; episode: Episode; isStorySlug?: boolean } | undefined {
+  if (!slug) return undefined;
+  const clean = decodeURIComponent(slug).trim().toLowerCase();
+
+  // 1. Search across all episodes
+  for (const story of STORIES) {
+    const episode = story.episodes.find(
+      (e) =>
+        (e.slug && e.slug.toLowerCase() === clean) ||
+        e.id.toLowerCase() === clean ||
+        `ep-${e.episodeNumber}`.toLowerCase() === clean ||
+        `episode-${e.episodeNumber}`.toLowerCase() === clean
+    );
+    if (episode) {
+      return { story, episode };
+    }
+  }
+
+  // 2. Search across story slugs/ids
+  const story = STORIES.find(
+    (s) => s.slug.toLowerCase() === clean || s.id.toLowerCase() === clean
+  );
+  if (story && story.episodes.length > 0) {
+    return { story, episode: story.episodes[0], isStorySlug: true };
+  }
+
+  return undefined;
 }
 
 export function getStoriesByGenre(genreId: string): Story[] {
