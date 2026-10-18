@@ -3,8 +3,9 @@ import Link from 'next/link';
 import { notFound, redirect, RedirectType } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getPublicEpisodeBySlug, getPublicStoryBySlug, getPublicStories } from '@/lib/supabase/queries';
-import { getLocalEpisodeBySlug, getRelatedStories as getLocalRelated, STORIES } from '@/lib/data';
+import { getLocalEpisodeBySlug, getRelatedStories as getLocalRelated, getStoryBySlug, STORIES } from '@/lib/data';
 import ReaderContent from '@/app/(public)/reader/[storyId]/[episodeId]/ReaderContent';
+import StoryIntroductionContent from '@/components/StoryIntroductionContent';
 
 export const revalidate = 60;
 
@@ -27,9 +28,10 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
   if (RESERVED_SLUGS.has(cleanSlug)) return { title: 'Story Episodes' };
 
   try {
-    const result = await getPublicEpisodeBySlug(cleanSlug);
-    if (result) {
-      const { story, episode } = result;
+    // 1. Try finding as episode in DB
+    const episodeResult = await getPublicEpisodeBySlug(cleanSlug);
+    if (episodeResult) {
+      const { story, episode } = episodeResult;
       const title = `${episode.title} - ${story.title} | StoryEpisodes`;
       const description = episode.summary || story.shortDescription || `Read ${episode.title} online on StoryEpisodes.`;
       const canonical = `https://www.thestorynovels.com/${episode.slug || episode.id}`;
@@ -56,12 +58,73 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
         },
       };
     }
+
+    // 2. Try finding as story in DB (Main Story Introduction)
+    const story = await getPublicStoryBySlug(cleanSlug);
+    if (story) {
+      const title = `${story.title} - Story Introduction & Episodes | StoryEpisodes`;
+      const description = story.shortDescription || story.fullDescription || `Read ${story.title} by ${story.author} online on StoryEpisodes.`;
+      const canonical = `https://www.thestorynovels.com/${story.slug || story.id}`;
+
+      return {
+        title,
+        description,
+        alternates: {
+          canonical,
+        },
+        openGraph: {
+          title,
+          description,
+          url: canonical,
+          type: 'article',
+          images: story.coverImage ? [{ url: story.coverImage }] : [],
+        },
+        twitter: {
+          card: 'summary_large_image',
+          title,
+          description,
+          images: story.coverImage ? [story.coverImage] : [],
+        },
+      };
+    }
   } catch (e) {
     console.error('Error generating metadata for slug:', e);
   }
 
+  // 3. Fallback to local mock data
+  const localEpisodeResult = getLocalEpisodeBySlug(cleanSlug);
+  if (localEpisodeResult) {
+    const { story, episode } = localEpisodeResult;
+    const title = `${episode.title} - ${story.title} | StoryEpisodes`;
+    const description = episode.summary || story.shortDescription || `Read ${episode.title} online.`;
+    const canonical = `https://www.thestorynovels.com/${episode.slug || episode.id}`;
+
+    return {
+      title,
+      description,
+      alternates: { canonical },
+      openGraph: { title, description, url: canonical, type: 'article', publishedTime: episode.publishedAt, images: episode.image || story.coverImage ? [{ url: episode.image || story.coverImage }] : [] },
+      twitter: { card: 'summary_large_image', title, description, images: episode.image || story.coverImage ? [episode.image || story.coverImage] : [] },
+    };
+  }
+
+  const localStory = getStoryBySlug(cleanSlug);
+  if (localStory) {
+    const title = `${localStory.title} - Story Introduction & Episodes | StoryEpisodes`;
+    const description = localStory.shortDescription || localStory.fullDescription || `Read ${localStory.title} by ${localStory.author} online.`;
+    const canonical = `https://www.thestorynovels.com/${localStory.slug || localStory.id}`;
+
+    return {
+      title,
+      description,
+      alternates: { canonical },
+      openGraph: { title, description, url: canonical, type: 'article', images: localStory.coverImage ? [{ url: localStory.coverImage }] : [] },
+      twitter: { card: 'summary_large_image', title, description, images: localStory.coverImage ? [localStory.coverImage] : [] },
+    };
+  }
+
   return {
-    title: 'Read Story Episode | StoryEpisodes',
+    title: 'Story Not Found | StoryEpisodes',
     description: 'Read gripping episodic fiction and stories online.',
   };
 }
@@ -122,25 +185,32 @@ export default async function SlugPage({ params }: SlugPageProps) {
   // 2. If not found as episode, check if the slug is a STORY slug in the database
   try {
     const story = await getPublicStoryBySlug(cleanSlug);
-    if (story && story.episodes && story.episodes.length > 0) {
-      const firstEp = story.episodes[0];
-      redirect(`/${firstEp.slug || firstEp.id}`, RedirectType.replace);
+    if (story) {
+      let allStories: import('@/lib/types').Story[] = [];
+      try {
+        allStories = await getPublicStories();
+      } catch {
+        allStories = STORIES;
+      }
+      const relatedStories = allStories
+        .filter((s) => s.id !== story.id && (s.genreId === story.genreId || s.language === story.language || s.categorySlug === story.categorySlug))
+        .slice(0, 3);
+
+      return (
+        <StoryIntroductionContent
+          story={story}
+          relatedStories={relatedStories}
+        />
+      );
     }
   } catch (err: any) {
-    // If it's a redirect, re-throw so Next.js performs the redirect
-    if (err?.digest?.startsWith('NEXT_REDIRECT')) throw err;
     console.error('Failed checking story slug in DB:', err);
   }
 
-  // 3. Fallback to local mock data
-  const localResult = getLocalEpisodeBySlug(cleanSlug);
-  if (localResult) {
-    const { story: localStory, episode: localEpisode, isStorySlug } = localResult;
-
-    if (isStorySlug && localStory.episodes.length > 0) {
-      const firstEp = localStory.episodes[0];
-      redirect(`/${firstEp.slug || firstEp.id}`, RedirectType.replace);
-    }
+  // 3. Fallback to local mock data (Episode check)
+  const localEpisodeResult = getLocalEpisodeBySlug(cleanSlug);
+  if (localEpisodeResult) {
+    const { story: localStory, episode: localEpisode } = localEpisodeResult;
 
     const relatedStories = getLocalRelated(localStory.id, 3);
     const currentIndex = localStory.episodes.findIndex((e) => e.id === localEpisode.id);
@@ -153,6 +223,18 @@ export default async function SlugPage({ params }: SlugPageProps) {
         episode={localEpisode}
         prevEpisode={prevEpisode}
         nextEpisode={nextEpisode}
+        relatedStories={relatedStories}
+      />
+    );
+  }
+
+  // 4. Fallback to local mock data (Story check)
+  const localStory = getStoryBySlug(cleanSlug);
+  if (localStory) {
+    const relatedStories = getLocalRelated(localStory.id, 3);
+    return (
+      <StoryIntroductionContent
+        story={localStory}
         relatedStories={relatedStories}
       />
     );

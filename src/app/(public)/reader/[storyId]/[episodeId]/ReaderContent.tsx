@@ -27,12 +27,12 @@ export default function ReaderContent({
       <div className="reader-container">
         {/* Reader Header */}
         <div className="reader-header">
-          <button className="back-link" onClick={() => openStoryModal(story)}>
+          <Link href={`/${story.slug || story.id}`} className="back-link">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
             Back to Story
-          </button>
+          </Link>
         </div>
 
         {/* Reader Meta */}
@@ -97,7 +97,9 @@ export default function ReaderContent({
           ) : (
             <div className="series-end">
               <p>🎉 You&apos;ve reached the latest episode!</p>
-              <button className="btn-primary" onClick={() => openStoryModal(story)}>Back to Story</button>
+              <Link href={`/${story.slug || story.id}`} className="btn-primary" style={{ textDecoration: 'none', display: 'inline-block' }}>
+                Back to Story
+              </Link>
             </div>
           )}
         </div>
@@ -108,15 +110,15 @@ export default function ReaderContent({
             <h3>Related Stories</h3>
             <div className="related-grid">
               {relatedStories.map((rel) => (
-                <button
+                <Link
                   key={rel.id}
+                  href={`/${rel.slug || rel.id}`}
                   className="related-card-btn"
-                  onClick={() => openStoryModal(rel)}
                 >
                   <h4>{rel.title}</h4>
                   <p>{rel.genre} • By {rel.author}</p>
                   <span className="view-link">View Story →</span>
-                </button>
+                </Link>
               ))}
             </div>
           </div>
@@ -353,6 +355,9 @@ export default function ReaderContent({
           border-radius: var(--radius-md);
           transition: var(--transition-fast);
           width: 100%;
+          text-decoration: none;
+          color: inherit;
+          display: block;
         }
 
         .related-card-btn:hover {

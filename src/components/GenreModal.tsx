@@ -99,20 +99,18 @@ export default function GenreModal() {
           {genreStories.length > 0 ? (
             <div className="genre-stories-mini-list">
               {genreStories.map((story) => (
-                <div
+                <Link
                   key={story.id}
+                  href={`/${story.slug || story.id}`}
                   className="genre-mini-card"
-                  onClick={() => {
-                    closeGenreModal();
-                    openStoryModal(story);
-                  }}
+                  onClick={closeGenreModal}
                 >
                   <div className="mini-card-text">
                     <h4>{story.title}</h4>
                     <p>By {story.author} • {story.episodes?.length || 0} Episodes</p>
                   </div>
                   <span className="mini-read-btn">Read →</span>
-                </div>
+                </Link>
               ))}
             </div>
           ) : (
@@ -278,6 +276,8 @@ export default function GenreModal() {
           border: 1px solid var(--border-color);
           border-radius: var(--radius-md);
           cursor: pointer;
+          text-decoration: none;
+          color: inherit;
           transition: var(--transition-fast);
         }
 

@@ -109,39 +109,11 @@ export async function getPublicStories(filters?: {
   return stories
 }
 
-export async function getPublicStoryBySlug(slug: string): Promise<Story | null> {
+export async function getPublicStoryBySlug(slugOrId: string): Promise<Story | null> {
   const supabase = createPublicClient()
+  const clean = decodeURIComponent(slugOrId).trim().toLowerCase()
 
-  const { data, error } = await supabase
-    .from('stories')
-    .select(`
-      *,
-      author:authors(*),
-      language:languages(*),
-      category:categories(*),
-      story_genres(genre_id, genres(*)),
-      episodes:episodes(*)
-    `)
-    .eq('slug', slug)
-    .eq('status', 'published')
-    .single()
-
-  if (error || !data) return null
-  
-  // Also filter episodes to only show published ones
-  if (data.episodes) {
-    data.episodes = data.episodes
-      .filter((ep: any) => ep.status === 'published')
-      .sort((a: any, b: any) => a.episode_number - b.episode_number)
-  }
-
-  return transformStory(data)
-}
-
-export async function getPublicStoryById(id: string): Promise<Story | null> {
-  const supabase = createPublicClient()
-
-  // Try by ID first, then by slug
+  // 1. Try finding by slug (case-insensitive)
   let { data, error } = await supabase
     .from('stories')
     .select(`
@@ -152,13 +124,13 @@ export async function getPublicStoryById(id: string): Promise<Story | null> {
       story_genres(genre_id, genres(*)),
       episodes:episodes(*)
     `)
-    .eq('id', id)
+    .ilike('slug', clean)
     .eq('status', 'published')
-    .single()
+    .maybeSingle()
 
-  if (error || !data) {
-    // Try by slug
-    const result = await supabase
+  // 2. If not found, try by ID
+  if (!data) {
+    const res = await supabase
       .from('stories')
       .select(`
         *,
@@ -168,23 +140,26 @@ export async function getPublicStoryById(id: string): Promise<Story | null> {
         story_genres(genre_id, genres(*)),
         episodes:episodes(*)
       `)
-      .eq('slug', id)
+      .eq('id', clean)
       .eq('status', 'published')
-      .single()
-    
-    data = result.data
-    error = result.error
+      .maybeSingle()
+    data = res.data
   }
 
-  if (error || !data) return null
-
+  if (!data) return null
+  
+  // Filter episodes to only show published ones and sort numerically
   if (data.episodes) {
     data.episodes = data.episodes
       .filter((ep: any) => ep.status === 'published')
-      .sort((a: any, b: any) => a.episode_number - b.episode_number)
+      .sort((a: any, b: any) => Number(a.episode_number) - Number(b.episode_number))
   }
 
   return transformStory(data)
+}
+
+export async function getPublicStoryById(id: string): Promise<Story | null> {
+  return getPublicStoryBySlug(id)
 }
 
 export async function getPublicEpisodeBySlug(slugOrId: string): Promise<{ story: Story; episode: Episode } | null> {

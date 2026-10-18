@@ -82,11 +82,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  // Dynamic story & episode pages
+  // Dynamic story introduction & episode pages
   let storyPages: MetadataRoute.Sitemap = []
   try {
     const stories = await getPublicStories()
     for (const story of stories) {
+      // 1. Main story introduction page URL
+      const storySlug = story.slug || story.id
+      storyPages.push({
+        url: `${SITE_URL}/${storySlug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.85,
+      })
+
+      // 2. Individual episode URLs
       if (story.episodes && story.episodes.length > 0) {
         for (const ep of story.episodes) {
           const slug = ep.slug || ep.id

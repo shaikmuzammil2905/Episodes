@@ -62,18 +62,18 @@ export default function HeroSection({ stories = [] }: HeroSectionProps) {
             {showResults && results.length > 0 && (
               <div className="search-results">
                 {results.map((s) => (
-                  <button
+                  <Link
                     key={s.id}
+                    href={`/${s.slug || s.id}`}
                     className="search-result-item"
                     onMouseDown={() => {
-                      openStoryModal(s);
                       setSearchQuery('');
                       setShowResults(false);
                     }}
                   >
                     <div className="sr-title">{s.title}</div>
                     <div className="sr-meta">{s.genre} • {s.author} ({s.language})</div>
-                  </button>
+                  </Link>
                 ))}
               </div>
             )}

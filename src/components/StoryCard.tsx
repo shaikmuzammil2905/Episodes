@@ -2,8 +2,8 @@
 
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Story } from '@/lib/types';
-import { useModal } from '@/context/ModalContext';
 import ScrollObserver from '@/components/ScrollObserver';
 
 interface StoryCardProps {
@@ -11,11 +11,11 @@ interface StoryCardProps {
 }
 
 export default function StoryCard({ story }: StoryCardProps) {
-  const { openStoryModal } = useModal();
+  const storySlug = story.slug || story.id;
 
   return (
     <ScrollObserver animationClass="fade-up">
-      <div className="story-card" onClick={() => openStoryModal(story)}>
+      <Link href={`/${storySlug}`} className="story-card">
         <div className="cover-wrapper">
           <Image
             src={story.coverImage}
@@ -67,6 +67,8 @@ export default function StoryCard({ story }: StoryCardProps) {
             flex-direction: column;
             cursor: pointer;
             height: 100%;
+            text-decoration: none;
+            color: inherit;
             transition: transform var(--transition-fast), border-color var(--transition-fast);
           }
 
@@ -170,7 +172,7 @@ export default function StoryCard({ story }: StoryCardProps) {
             transition: transform 0.2s ease;
           }
         `}</style>
-      </div>
+      </Link>
     </ScrollObserver>
   );
 }

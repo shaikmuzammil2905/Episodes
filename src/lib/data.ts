@@ -302,7 +302,8 @@ export function getStories(): Story[] {
 
 export function getStoryById(id: string): Story | undefined {
   if (!id) return undefined;
-  return STORIES.find((s) => s.id.toLowerCase() === id.toLowerCase() || s.slug.toLowerCase() === id.toLowerCase());
+  const clean = decodeURIComponent(id).trim().toLowerCase();
+  return STORIES.find((s) => s.id.toLowerCase() === clean || s.slug.toLowerCase() === clean);
 }
 
 export function getStoryBySlug(slug: string): Story | undefined {
@@ -317,20 +318,21 @@ export function getEpisodesByStory(storyId: string): Episode[] {
 export function getEpisodeById(storyId: string, episodeId: string): { story: Story; episode: Episode } | undefined {
   const story = getStoryById(storyId);
   if (!story) return undefined;
+  const cleanEp = decodeURIComponent(episodeId).trim().toLowerCase();
   const episode = story.episodes.find(
     (e) =>
-      e.id.toLowerCase() === episodeId.toLowerCase() ||
-      (e.slug && e.slug.toLowerCase() === episodeId.toLowerCase())
+      e.id.toLowerCase() === cleanEp ||
+      (e.slug && e.slug.toLowerCase() === cleanEp)
   );
   if (!episode) return undefined;
   return { story, episode };
 }
 
-export function getLocalEpisodeBySlug(slug: string): { story: Story; episode: Episode; isStorySlug?: boolean } | undefined {
+export function getLocalEpisodeBySlug(slug: string): { story: Story; episode: Episode } | undefined {
   if (!slug) return undefined;
   const clean = decodeURIComponent(slug).trim().toLowerCase();
 
-  // 1. Search across all episodes
+  // Search across all episodes in all stories
   for (const story of STORIES) {
     const episode = story.episodes.find(
       (e) =>
@@ -342,14 +344,6 @@ export function getLocalEpisodeBySlug(slug: string): { story: Story; episode: Ep
     if (episode) {
       return { story, episode };
     }
-  }
-
-  // 2. Search across story slugs/ids
-  const story = STORIES.find(
-    (s) => s.slug.toLowerCase() === clean || s.id.toLowerCase() === clean
-  );
-  if (story && story.episodes.length > 0) {
-    return { story, episode: story.episodes[0], isStorySlug: true };
   }
 
   return undefined;
