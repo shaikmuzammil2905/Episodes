@@ -12,6 +12,14 @@ export const metadata: Metadata = {
   title: "StoryEpisodes — Read • Explore • Keep Coming Back",
   description:
     "Discover captivating stories told one episode at a time. Explore genres, follow your favourite worlds, and keep coming back for the next chapter.",
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/icon.png', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/icon.png',
+  },
   robots: {
     index: true,
     follow: true,
@@ -26,6 +34,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "StoryEpisodes",
     url: "https://www.thestorynovels.com",
+    images: [{ url: '/icon.png', width: 512, height: 512 }],
   },
 };
 
@@ -37,6 +46,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="icon" href="/icon.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/icon.png" />
         {/* Google tag (gtag.js) */}
         <script
           async
@@ -50,6 +61,36 @@ export default function RootLayout({
               gtag('js', new Date());
 
               gtag('config', 'G-YMKEDFWN5L');
+            `,
+          }}
+        />
+        {/* Critical Splash Screen Styles (Immediate display to eliminate FOUC/layout flicker) */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+              .splash-screen {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                background-color: #F8FAF9 !important;
+                z-index: 999999 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                opacity: 1;
+                visibility: visible;
+                transition: opacity 0.4s ease, visibility 0.4s ease;
+                pointer-events: auto;
+              }
+              .splash-screen.fade-out {
+                opacity: 0 !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
+              }
             `,
           }}
         />
