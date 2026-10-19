@@ -65,7 +65,7 @@ export async function getPublicStories(filters?: {
       language:languages(*),
       category:categories(*),
       story_genres(genre_id, genres(*)),
-      episodes:episodes(id, slug, episode_number, title, summary, published_at, cover_url, image_url, status)
+      episodes:episodes(*)
     `)
     .eq('status', 'published')
     .order('display_order', { ascending: true })
