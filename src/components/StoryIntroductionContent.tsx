@@ -16,7 +16,6 @@ export default function StoryIntroductionContent({
   relatedStories = [],
 }: StoryIntroductionContentProps) {
   const [copied, setCopied] = useState(false);
-  const [navigatingEpisodeId, setNavigatingEpisodeId] = useState<string | null>(null);
 
   // Sort episodes numerically
   const episodes = [...(story.episodes || [])].sort(
@@ -48,10 +47,6 @@ export default function StoryIntroductionContent({
         console.error('Failed to copy link:', err);
       }
     }
-  };
-
-  const handleEpisodeClick = (epTarget: string) => {
-    setNavigatingEpisodeId(epTarget);
   };
 
   // Structured Data (JSON-LD) for Search Engines
@@ -166,22 +161,13 @@ export default function StoryIntroductionContent({
                 {firstEpisode ? (
                   <Link
                     href={`/${firstEpisode.slug || firstEpisode.id}`}
-                    className={`btn-primary start-reading-btn ${navigatingEpisodeId === (firstEpisode.slug || firstEpisode.id) ? 'is-navigating' : ''}`}
-                    onClick={() => handleEpisodeClick(firstEpisode.slug || firstEpisode.id)}
+                    prefetch={true}
+                    className="btn-primary start-reading-btn"
                   >
-                    {navigatingEpisodeId === (firstEpisode.slug || firstEpisode.id) ? (
-                      <>
-                        <span className="btn-spinner" />
-                        <span>Opening Episode 1...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Start Reading (Episode 1)</span>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                          <path d="M5 12h14M12 5l7 7-7 7" />
-                        </svg>
-                      </>
-                    )}
+                    <span>Start Reading (Episode 1)</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
                   </Link>
                 ) : (
                   <button className="btn-primary start-reading-btn" disabled>
@@ -238,6 +224,7 @@ export default function StoryIntroductionContent({
                 {firstEpisode && (
                   <Link
                     href={`/${firstEpisode.slug || firstEpisode.id}`}
+                    prefetch={true}
                     className="read-first-link"
                   >
                     Start with Ep 1 →
@@ -249,13 +236,12 @@ export default function StoryIntroductionContent({
                 <div className="episodes-chapter-list">
                   {episodes.map((ep: Episode) => {
                     const epTarget = ep.slug || ep.id;
-                    const isOpening = navigatingEpisodeId === epTarget;
                     return (
                       <Link
                         key={ep.id}
                         href={`/${epTarget}`}
-                        className={`chapter-card ${isOpening ? 'is-loading' : ''}`}
-                        onClick={() => handleEpisodeClick(epTarget)}
+                        prefetch={true}
+                        className="chapter-card"
                       >
                         <div className="chapter-badge">
                           <span className="badge-ep">Ep</span>
@@ -276,15 +262,9 @@ export default function StoryIntroductionContent({
                         </div>
 
                         <div className="chapter-action">
-                          {isOpening ? (
-                            <span className="action-loading">
-                              <span className="btn-spinner small" /> Opening...
-                            </span>
-                          ) : (
-                            <span className="action-read-btn">
-                              Read Chapter <span className="arrow">→</span>
-                            </span>
-                          )}
+                          <span className="action-read-btn">
+                            Read Chapter <span className="arrow">→</span>
+                          </span>
                         </div>
                       </Link>
                     );

@@ -42,14 +42,14 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="desktop-nav desktop-only">
-            <Link href="/" className="nav-link">Home</Link>
-            <Link href="/long-stories" className="nav-link">Long Stories</Link>
-            <Link href="/short-stories" className="nav-link">Short Stories</Link>
-            <Link href="/novels" className="nav-link">Novels</Link>
-            <Link href="/fun-stories" className="nav-link">Fun Stories</Link>
-            <Link href="/comedy-stories" className="nav-link">Comedy Stories</Link>
-            <Link href="/genres" className="nav-link">Genres</Link>
-            <Link href="/authors" className="nav-link">Authors</Link>
+            <Link href="/" prefetch={true} className="nav-link">Home</Link>
+            <Link href="/long-stories" prefetch={true} className="nav-link">Long Stories</Link>
+            <Link href="/short-stories" prefetch={true} className="nav-link">Short Stories</Link>
+            <Link href="/novels" prefetch={true} className="nav-link">Novels</Link>
+            <Link href="/fun-stories" prefetch={true} className="nav-link">Fun Stories</Link>
+            <Link href="/comedy-stories" prefetch={true} className="nav-link">Comedy Stories</Link>
+            <Link href="/genres" prefetch={true} className="nav-link">Genres</Link>
+            <Link href="/authors" prefetch={true} className="nav-link">Authors</Link>
           </nav>
 
           {/* Header Actions */}
@@ -73,14 +73,14 @@ export default function Header() {
           <div className="mobile-menu-overlay">
             <div className="mobile-menu-content">
               <nav className="mobile-nav-links">
-                <Link href="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
-                <Link href="/long-stories" onClick={() => setMobileMenuOpen(false)}>Long Stories</Link>
-                <Link href="/short-stories" onClick={() => setMobileMenuOpen(false)}>Short Stories</Link>
-                <Link href="/novels" onClick={() => setMobileMenuOpen(false)}>Novels</Link>
-                <Link href="/fun-stories" onClick={() => setMobileMenuOpen(false)}>Fun Stories</Link>
-                <Link href="/comedy-stories" onClick={() => setMobileMenuOpen(false)}>Comedy Stories</Link>
-                <Link href="/genres" onClick={() => setMobileMenuOpen(false)}>Genres</Link>
-                <Link href="/authors" onClick={() => setMobileMenuOpen(false)}>Authors</Link>
+                <Link href="/" prefetch={true} onClick={() => setMobileMenuOpen(false)}>Home</Link>
+                <Link href="/long-stories" prefetch={true} onClick={() => setMobileMenuOpen(false)}>Long Stories</Link>
+                <Link href="/short-stories" prefetch={true} onClick={() => setMobileMenuOpen(false)}>Short Stories</Link>
+                <Link href="/novels" prefetch={true} onClick={() => setMobileMenuOpen(false)}>Novels</Link>
+                <Link href="/fun-stories" prefetch={true} onClick={() => setMobileMenuOpen(false)}>Fun Stories</Link>
+                <Link href="/comedy-stories" prefetch={true} onClick={() => setMobileMenuOpen(false)}>Comedy Stories</Link>
+                <Link href="/genres" prefetch={true} onClick={() => setMobileMenuOpen(false)}>Genres</Link>
+                <Link href="/authors" prefetch={true} onClick={() => setMobileMenuOpen(false)}>Authors</Link>
               </nav>
               <div className="mobile-menu-actions">
                 <button className="btn-primary w-full" onClick={() => { setMobileMenuOpen(false); openWhatsAppModal(); }}>

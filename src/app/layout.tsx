@@ -56,35 +56,6 @@ export default function RootLayout({
             gtag('config', 'G-YMKEDFWN5L');
           `}
         </Script>
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
-              .splash-screen {
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                right: 0 !important;
-                bottom: 0 !important;
-                width: 100vw !important;
-                height: 100vh !important;
-                background-color: #F8FAF9 !important;
-                z-index: 999999 !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                opacity: 1;
-                visibility: visible;
-                transition: opacity 0.4s ease, visibility 0.4s ease;
-                pointer-events: auto;
-              }
-              .splash-screen.fade-out {
-                opacity: 0 !important;
-                visibility: hidden !important;
-                pointer-events: none !important;
-              }
-            `,
-          }}
-        />
       </head>
       <body>
         {children}

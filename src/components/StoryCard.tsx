@@ -15,7 +15,7 @@ export default function StoryCard({ story }: StoryCardProps) {
 
   return (
     <ScrollObserver animationClass="fade-up">
-      <Link href={`/${storySlug}`} className="story-card">
+      <Link href={`/${storySlug}`} prefetch={true} className="story-card">
         <div className="cover-wrapper">
           <Image
             src={story.coverImage}

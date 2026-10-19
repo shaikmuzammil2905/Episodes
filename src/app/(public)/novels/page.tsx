@@ -36,7 +36,7 @@ export default async function NovelsPage({
   }
 
   return (
-    <Suspense fallback={<div className="loading-state">Loading novels...</div>}>
+    <Suspense fallback={null}>
       <StoriesContent
         initialStories={stories}
         initialGenres={genres}

@@ -36,7 +36,7 @@ export default async function LongStoriesPage({
   }
 
   return (
-    <Suspense fallback={<div className="loading-state">Loading stories...</div>}>
+    <Suspense fallback={null}>
       <StoriesContent
         initialStories={stories}
         initialGenres={genres}

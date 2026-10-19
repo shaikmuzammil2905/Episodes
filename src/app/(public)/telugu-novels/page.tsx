@@ -29,7 +29,7 @@ export default async function TeluguNovelsPage() {
   }
 
   return (
-    <Suspense fallback={<div className="loading-state">Loading Telugu novels...</div>}>
+    <Suspense fallback={null}>
       <StoriesContent
         initialStories={stories}
         initialGenres={genres}

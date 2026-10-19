@@ -58,6 +58,7 @@ export default function MobileBottomNav() {
           <Link
             key={item.label}
             href={item.href}
+            prefetch={true}
             className={`nav-item ${isActive ? 'active' : ''}`}
           >
             <span className="nav-icon">{item.icon}</span>

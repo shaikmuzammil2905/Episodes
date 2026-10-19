@@ -36,7 +36,7 @@ export default async function FunStoriesPage({
   }
 
   return (
-    <Suspense fallback={<div className="loading-state">Loading stories...</div>}>
+    <Suspense fallback={null}>
       <StoriesContent
         initialStories={stories}
         initialGenres={genres}
